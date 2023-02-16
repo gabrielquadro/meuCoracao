@@ -7,15 +7,15 @@ import Login from '../pages/Login';
 
 const Stack = createNativeStackNavigator();
 
-function AuthRoutes(){
-    return(
+function AuthRoutes() {
+    return (
         <Stack.Navigator>
             <Stack.Screen
-            name='Login'
-            component={Login}
-            options={{headerShown: false}}
+                name='Login'
+                component={Login}
+                options={{ headerShown: false }}
             />
-          
+
         </Stack.Navigator>
     )
 }

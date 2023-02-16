@@ -26,7 +26,7 @@ function AuthProvider({ children }) {
         loadStorage();
     }, [])
 
-    async function signUp(email, password, name) {
+    async function signUp(email, password, name, isSelected) {
         setLoadingAuth(true);
         await auth.createUserWithEmailAndPassword(email, password)
             .then((value) => {
@@ -35,11 +35,13 @@ function AuthProvider({ children }) {
                     .set({
                         nome: name,
                         createdAt: new Date(),
+                        isDoctor: isSelected
                     }).then(() => {
                         let data = {
                             uid: uid,
                             nome: name,
-                            email: value.user.email
+                            email: value.user.email,
+                            isDoctor: isSelected
                         }
                         setUser(data);
                         storageUser(data);

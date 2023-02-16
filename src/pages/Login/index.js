@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import Checkbox from 'expo-checkbox';
 import { FontAwesome } from "@expo/vector-icons";
 import {
   View,
@@ -10,6 +11,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { AuthContext } from "../../contexts/auth";
+
 export default function Login() {
   const [login, setLogin] = useState(true);
   const [name, setName] = useState("");
@@ -17,6 +19,7 @@ export default function Login() {
   const [senha, setSenha] = useState("");
 
   const { signUp, signIn, loadingAuth } = useContext(AuthContext);
+  const [isSelected, setSelection] = useState(false);
 
   async function handleSignIn() {
     if (!email || !senha) {
@@ -32,7 +35,7 @@ export default function Login() {
       return;
     }
     //cadastrar usuário
-    await signUp(email, senha, name);
+    await signUp(email, senha, name, isSelected);
   }
 
   if (login) {
@@ -102,6 +105,17 @@ export default function Login() {
         placeholder="senha"
         placeholderTextColor="#000"
       />
+
+      <View style={styles.checkboxContainer}>
+      <Checkbox
+          style={styles.checkbox}
+          value={isSelected}
+          onValueChange={setSelection}
+          color="black"
+        />
+        <Text>É médico?</Text>
+      </View>
+
       <TouchableOpacity onPress={handSignUp} style={styles.btn}>
         {loadingAuth ? (
           <ActivityIndicator size={20} color="#FFF" />
@@ -166,5 +180,13 @@ const styles = StyleSheet.create({
   signUpBtnTxt: {
     color: "#FFF",
     fontSize: 15,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginTop: 12,
+    width: "80%",
+  },
+  checkbox: {
+    marginRight: 10,
   },
 });
