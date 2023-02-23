@@ -2,31 +2,93 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { AuthContext } from '../../contexts/auth'
 import Header from '../../components/Header';
-import { db } from '../../config'
-
+import { db, app, firebase } from '../../config'
+import * as ImagePicker from 'expo-image-picker';
 
 export default function ProfilePaciente() {
 
     const { signOut, user } = useContext(AuthContext);
-    const [ urlI, setUrlI ] = useState('https://sujeitoprogramador.com/steve.png');
+    const [urlI, setUrlI] = useState('https://sujeitoprogramador.com/steve.png');
     const [userP, setUserP] = useState([]);
+    const [image, setImage] = useState(null);
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        //console.log(result);
+
+        if (!result.canceled) {
+            uploadImage(result.uri, user.uid);
+            setImage(result.assets[0].uri);
+            setUrlI(result.assets[0].uri);
+        }
+    };
+
+    const uploadImage = async(uri, imgName) => {
+        const resposnse = await fetch(uri);
+        const blob = await resposnse.blob();
+        var ref = db.storage.ref().child("imagesPerfil/" + imgName);
+        return ref.put(blob);
+
+    }
 
 
     async function handleSignOut() {
         await signOut();
     }
 
+    useEffect(() => {
+        async function getUser() {
+            const userprofile = db.collection('users').doc(user.uid).get()
+                .then((value) => {
+                    setUserP(value.data());
+                })
+        }
+        getUser();
+    }, [])
 
-    
     return (
         <View style={styles.container}>
             <Header />
-        
-            <Text>Tela profile paciente</Text>
 
+            {urlI ? (
+                <TouchableOpacity style={styles.UploadButton} onPress={pickImage}>
+                    <Text style={styles.UploadButtonTxt}>+</Text>
+                    <Image
+                        style={styles.img}
+                        source={{ uri: urlI }}
+                    />
+                </TouchableOpacity>
+            ) : (
+                <TouchableOpacity style={styles.UploadButton} onPress={() => alert("CLICOU 2")}>
+                    <Text style={styles.UploadButtonTxt}>+</Text>
+                </TouchableOpacity>
+
+            )}
+
+            {/* <Image
+                style={styles.img}
+                source={require('../../assets/avatar.png')}
+            /> */}
+
+
+
+
+            <Text style={styles.nome} >{userP.nome}</Text>
+            <Text style={styles.email} >{user.email}</Text>
+            <TouchableOpacity style={styles.btnAtt}>
+                <Text style={styles.btnAttTxt}>Atualizar perfil</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleSignOut} style={styles.btnSair}>
                 <Text style={styles.btnSairTxt}>Sair</Text>
             </TouchableOpacity>
+            {/* <Button title='Sair' onPress={handleSignOut}></Button> */}
         </View>
     )
 }
@@ -105,7 +167,7 @@ const styles = StyleSheet.create({
         zIndex: 99,
         bottom: '-10%',
         right: '-10%',
-        color:'#FFF'
+        color: '#FFF'
 
     }
 
