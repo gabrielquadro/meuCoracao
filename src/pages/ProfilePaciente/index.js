@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../../contexts/auth'
 import Header from '../../components/Header';
 import { db, app, firebase } from '../../config'
@@ -8,40 +8,55 @@ import * as ImagePicker from 'expo-image-picker';
 export default function ProfilePaciente() {
 
     const { signOut, user } = useContext(AuthContext);
-    const [urlI, setUrlI] = useState('https://sujeitoprogramador.com/steve.png');
+    const [urlI, setUrlI] = useState(null);
     const [userP, setUserP] = useState([]);
     const [image, setImage] = useState(null);
+    const [loading, setIsLoading] = useState(true);
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
         });
 
-        //console.log(result);
+        console.log(result);
 
         if (!result.canceled) {
-            uploadImage(result.uri, user.uid);
-            setImage(result.assets[0].uri);
-            setUrlI(result.assets[0].uri);
+            uploadImage(result.assets[0].uri);
+
         }
     };
 
-    const uploadImage = async(uri, imgName) => {
-        const resposnse = await fetch(uri);
-        const blob = await resposnse.blob();
-        var ref = db.storage.ref().child("imagesPerfil/" + imgName);
-        return ref.put(blob);
+    const uploadImage = async (uri) => {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const ref = firebase.storage().ref().child("fotoPerfil/" + user.uid);
+        const snapshot = await ref.put(blob);
+        console.log('Uploaded a blob or file!');
+        setIsLoading(true)
+        getImageFromFirebase();
+    };
 
-    }
+    const getImageFromFirebase = async () => {
+        try {
+            const ref = firebase.storage().ref().child('fotoPerfil/' + user.uid);
+            const url = await ref.getDownloadURL();
+            setUrlI(url);
+        } catch (e) {
+            setUrlI(null)
+        }
+
+    };
 
 
     async function handleSignOut() {
         await signOut();
     }
+
+
 
     useEffect(() => {
         async function getUser() {
@@ -51,31 +66,33 @@ export default function ProfilePaciente() {
                 })
         }
         getUser();
+        getImageFromFirebase();
     }, [])
+
+
 
     return (
         <View style={styles.container}>
             <Header />
 
-            {urlI ? (
-                <TouchableOpacity style={styles.UploadButton} onPress={pickImage}>
-                    <Text style={styles.UploadButtonTxt}>+</Text>
+            <TouchableOpacity style={styles.UploadButton} onPress={pickImage}>
+                <Text style={styles.UploadButtonTxt}>+</Text>
+                {urlI ?
+
                     <Image
                         style={styles.img}
                         source={{ uri: urlI }}
                     />
-                </TouchableOpacity>
-            ) : (
-                <TouchableOpacity style={styles.UploadButton} onPress={() => alert("CLICOU 2")}>
-                    <Text style={styles.UploadButtonTxt}>+</Text>
-                </TouchableOpacity>
 
-            )}
+                    :
 
-            {/* <Image
-                style={styles.img}
-                source={require('../../assets/avatar.png')}
-            /> */}
+                    <Image
+                        style={styles.img}
+                        source={require('../../assets/avatar.png')}
+                    />
+                }
+            </TouchableOpacity>
+
 
 
 
