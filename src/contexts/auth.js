@@ -1,5 +1,6 @@
 import React, { useState, createContext, useEffect } from 'react'
 import { auth, db } from '../config'
+import {Alert} from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -76,6 +77,7 @@ function AuthProvider({ children }) {
 
             })
             .catch((error) => {
+                Alert.alert("Usuário ou senha incorreto!");
                 console.log(error);
                 setLoadingAuth(false);
 

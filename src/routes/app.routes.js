@@ -7,6 +7,7 @@ import { Feather} from '@expo/vector-icons';
 import Home from '../pages/Home';
 import ProfilePaciente from '../pages/ProfilePaciente';
 import Search from '../pages/Search';
+import AtualizarPerfilPaciente from '../pages/AtualizarPerfilPaciente';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -15,6 +16,8 @@ function StackRoutes(){
     return(
         <Stack.Navigator>
             <Stack.Screen name="Home" component={Home} options={{ headerShown: false}}/>
+            <Stack.Screen name="AtualizarPerfilPaciente" component={AtualizarPerfilPaciente}
+             options={{title: 'Atualizar Perfil', headerTintColor:'#FFF', headerStyle:{backgroundColor:'#36393F'}}} />
            
         </Stack.Navigator>
     )

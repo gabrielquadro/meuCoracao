@@ -4,9 +4,10 @@ import { AuthContext } from '../../contexts/auth'
 import Header from '../../components/Header';
 import { db, app, firebase } from '../../config'
 import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from "@react-navigation/native";
 
 export default function ProfilePaciente() {
-
+    const navigation = useNavigation();
     const { signOut, user } = useContext(AuthContext);
     const [urlI, setUrlI] = useState(null);
     const [userP, setUserP] = useState([]);
@@ -100,7 +101,7 @@ export default function ProfilePaciente() {
             <Text style={styles.nome} >{userP.nome}</Text>
             <Text style={styles.email} >{user.email}</Text>
             <TouchableOpacity style={styles.btnAtt}>
-                <Text style={styles.btnAttTxt}>Atualizar perfil</Text>
+                <Text style={styles.btnAttTxt}  onPress={() => navigation.navigate("AtualizarPerfilPaciente")}>Atualizar perfil</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSignOut} style={styles.btnSair}>
                 <Text style={styles.btnSairTxt}>Sair</Text>
