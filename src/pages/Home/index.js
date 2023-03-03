@@ -14,7 +14,7 @@ export default function Home() {
       </View>
       <TouchableOpacity
         style={styles.btnNew}
-        activeOpacity={0.8}
+        //activeOpacity={0.8}
         onPress={() => navigation.navigate("Home")}
       >
         <Feather name="plus" color={"#FFF"} size={25} />

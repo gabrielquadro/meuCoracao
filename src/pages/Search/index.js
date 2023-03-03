@@ -17,7 +17,7 @@ export default function Search() {
   useEffect(() => {
       if (imput === '' || imput === undefined) {
 
-          const subscriber = db.collection('users')
+          const subscriber = db.collection('users').orderBy('nome')
           .onSnapshot(snapshot => {
               const list = [];
               snapshot.forEach(doc => {
