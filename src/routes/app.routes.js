@@ -8,6 +8,7 @@ import Home from '../pages/Home';
 import ProfilePaciente from '../pages/ProfilePaciente';
 import Search from '../pages/Search';
 import AtualizarPerfilPaciente from '../pages/AtualizarPerfilPaciente';
+import Formulario from '../pages/Formulario';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -16,6 +17,17 @@ function StackRoutes(){
     return(
         <Stack.Navigator>
             <Stack.Screen name="Home" component={Home} options={{ headerShown: false}}/>
+            <Stack.Screen name="Formulario" component={Formulario}
+             options={{title: 'Formulário', headerTintColor:'#FFF', headerStyle:{backgroundColor:'#36393F'}}} />
+           
+        </Stack.Navigator>
+    )
+}
+
+function StackRoutesProfile(){
+    return(
+        <Stack.Navigator>
+            <Stack.Screen name="Profile" component={ProfilePaciente} options={{ headerShown: false}}/>
             <Stack.Screen name="AtualizarPerfilPaciente" component={AtualizarPerfilPaciente}
              options={{title: 'Atualizar Perfil', headerTintColor:'#FFF', headerStyle:{backgroundColor:'#36393F'}}} />
            
@@ -44,15 +56,15 @@ function AppRoutes() {
                     }
                 }} />
 
-            <Tab.Screen name="Search" component={Search}
+            {/* <Tab.Screen name="Search" component={Search}
                 options={{
                     tabBarIcon: ({ color, size }) => {
                         return <Feather name="search" color={color} size={size} />
                     }
                 }}
-            />
+            /> */}
 
-            <Tab.Screen name="Profile" component={ProfilePaciente}
+            <Tab.Screen name="ProfilePerfil" component={StackRoutesProfile}
                 options={{
                     tabBarIcon: ({ color, size }) => {
                         return <Feather name="user" color={color} size={size} />
