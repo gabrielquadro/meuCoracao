@@ -61,11 +61,22 @@ export default function ProfilePaciente() {
 
     useEffect(() => {
         async function getUser() {
-            const userprofile = db.collection('users').doc(user.uid).get()
-                .then((value) => {
-                    setUserP(value.data());
-                })
+            //     console.log(user.uid)
+            //     const userprofile = db.collection('users').doc(user.uid).get()
+            //         .then((value) => {
+            //             console.log(value.data())
+            //             setUserP(value.data());
+            //         })
+            const userProfileRef = db.collection('users').doc(user.uid);
+            try {
+                const userProfile = await userProfileRef.get();
+                console.log(userProfile.data());
+                setUserP(userProfile.data())
+            } catch (error) {
+                console.error(error);
+            }
         }
+
         getUser();
         getImageFromFirebase();
     }, [])
@@ -101,7 +112,10 @@ export default function ProfilePaciente() {
             <Text style={styles.nome} >{userP.nome}</Text>
             <Text style={styles.email} >{user.email}</Text>
             <TouchableOpacity style={styles.btnAtt}>
-                <Text style={styles.btnAttTxt}  onPress={() => navigation.navigate("AtualizarPerfilPaciente")}>Atualizar perfil</Text>
+                <Text style={styles.btnAttTxt} onPress={() => navigation.navigate("AtualizarPerfilPaciente")}>Atualizar perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btnAtt}>
+                <Text style={styles.btnAttTxt} onPress={() => navigation.navigate("Avaliar")}>Avalair o aplicativo</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSignOut} style={styles.btnSair}>
                 <Text style={styles.btnSairTxt}>Sair</Text>

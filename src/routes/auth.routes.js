@@ -4,6 +4,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import Login from '../pages/Login';
+import Cadastrar from '../pages/Cadastrar';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +14,11 @@ function AuthRoutes() {
             <Stack.Screen
                 name='Login'
                 component={Login}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name='Cadastrar'
+                component={Cadastrar}
                 options={{ headerShown: false }}
             />
 

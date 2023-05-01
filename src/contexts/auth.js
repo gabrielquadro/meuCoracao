@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect } from 'react'
 import { auth, db } from '../config'
-import {Alert} from 'react-native'
+import { Alert } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -14,9 +14,9 @@ function AuthProvider({ children }) {
 
 
     useEffect(() => {
-        async function loadStorage(){
+        async function loadStorage() {
             const storageUser = await AsyncStorage.getItem('@userMeuCoracao');
-            if(storageUser){
+            if (storageUser) {
                 setUser(JSON.parse(storageUser))
                 setLoading(false)
             }
@@ -47,7 +47,77 @@ function AuthProvider({ children }) {
                         setUser(data);
                         storageUser(data);
                         setLoadingAuth(false);
+                    })
+            })
+            .catch((error) => {
+                console.log(error);
+                setLoadingAuth(false);
 
+            })
+    }
+
+    async function signUpMedico(email, password, name, crm, selectedState) {
+        setLoadingAuth(true);
+        await auth.createUserWithEmailAndPassword(email, password)
+            .then((value) => {
+                const uid = value.user.uid
+                db.collection('users').doc(uid)
+                    .set({
+                        nome: name,
+                        createdAt: new Date(),
+                        isDoctor: true,
+                        crm: crm,
+                        estado: selectedState
+                    }).then(() => {
+                        let data = {
+                            uid: uid,
+                            nome: name,
+                            email: value.user.email,
+                            isDoctor: true,
+                            crm: crm,
+                            estado: selectedState
+                        }
+                        setUser(data);
+                        storageUser(data);
+                        setLoadingAuth(false);
+                    })
+            })
+            .catch((error) => {
+                console.log(error);
+                setLoadingAuth(false);
+
+            })
+    }
+
+    async function signUpPaciente(email, password, name, phoneNumber, nameM, nasc, sexo) {
+        setLoadingAuth(true);
+        await auth.createUserWithEmailAndPassword(email, password)
+            .then((value) => {
+                const uid = value.user.uid
+                db.collection('users').doc(uid)
+                    .set({
+                        nome: name,
+                        createdAt: new Date(),
+                        isDoctor: false,
+                        telefone: phoneNumber,
+                        nomeMae: nameM,
+                        sexo:sexo,
+                        dataNascimento:nasc
+                    }).then(() => {
+                        let data = {
+                            uid: uid,
+                            nome: name,
+                            email: value.user.email,
+                            isDoctor: false,
+                            isDoctor: false,
+                            telefone: phoneNumber,
+                            nomeMae: nameM,
+                            sexo:sexo,
+                            dataNascimento:nasc
+                        }
+                        setUser(data);
+                        storageUser(data);
+                        setLoadingAuth(false);
                     })
             })
             .catch((error) => {
@@ -87,18 +157,18 @@ function AuthProvider({ children }) {
     async function signOut() {
         await auth.signOut();
         await AsyncStorage.clear()
-        .then(() => {
-            setUser(null);
-        })
+            .then(() => {
+                setUser(null);
+            })
     }
 
-    async function storageUser(data){
+    async function storageUser(data) {
         await AsyncStorage.setItem('@userMeuCoracao', JSON.stringify(data))
     }
 
 
     return (
-        <AuthContext.Provider value={{ signed: !!user, signUp, signIn , loadingAuth, loading, signOut, user}}>
+        <AuthContext.Provider value={{ signed: !!user, signUp, signIn, loadingAuth, loading, signOut, user, signUpMedico, signUpPaciente }}>
             {children}
         </AuthContext.Provider>
     )
