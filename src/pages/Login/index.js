@@ -107,42 +107,15 @@ export default function Login() {
       }
     } else {
       //cadastro de paciente
-      if (!name || !email || !senha || !phoneNumber || !nameM || !value || !sexo) {
+      if (!name || !email || !senha || !phoneNumber || !nameM || !value || !sexo || !docSelected) {
         Alert.alert("Informe todos os campos.");
         return;
       } else {
-        await signUpPaciente(email, senha, name, phoneNumber, nameM, value, sexo);
+        await signUpPaciente(email, senha, name, phoneNumber, nameM, value, sexo , docSelected);
       }
 
     }
   }
-
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     async function fetchDoctors() {
-  //       try {
-  //         const snapshoot = await db.collection('users')
-  //           .where('isDoctor', '==', true)
-  //           .orderBy('nome', 'cresc')
-  //           .get();
-            
-  //         const list = [];
-  //         snapshoot.docs.map(u => {
-  //           list.push({
-  //             ...u.data(),
-  //             id: u.id,
-  //           })
-  //         })
-          
-  //         setDoctors(list);
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     }
-  //     fetchDoctors();
-  //   }, [])
-  // )
 
   if (login) {
     return (

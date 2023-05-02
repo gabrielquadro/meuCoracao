@@ -89,8 +89,9 @@ function AuthProvider({ children }) {
             })
     }
 
-    async function signUpPaciente(email, password, name, phoneNumber, nameM, nasc, sexo) {
+    async function signUpPaciente(email, password, name, phoneNumber, nameM, nasc, sexo, docSelected) {
         setLoadingAuth(true);
+        console.log(docSelected)
         await auth.createUserWithEmailAndPassword(email, password)
             .then((value) => {
                 const uid = value.user.uid
@@ -102,7 +103,8 @@ function AuthProvider({ children }) {
                         telefone: phoneNumber,
                         nomeMae: nameM,
                         sexo:sexo,
-                        dataNascimento:nasc
+                        dataNascimento:nasc,
+                        medico: docSelected
                     }).then(() => {
                         let data = {
                             uid: uid,
@@ -113,7 +115,8 @@ function AuthProvider({ children }) {
                             telefone: phoneNumber,
                             nomeMae: nameM,
                             sexo:sexo,
-                            dataNascimento:nasc
+                            dataNascimento:nasc,
+                            medico: docSelected
                         }
                         setUser(data);
                         storageUser(data);

@@ -109,31 +109,37 @@ export default function Cadastrar() {
                 Alert.alert("Informe todos os campos.");
                 return;
             } else {
-                await signUpPaciente(email, senha, name, phoneNumber, nameM, value, sexo);
+                await signUpPaciente(email, senha, name, phoneNumber, nameM, value, sexo , docSelected);
             }
 
         }
     }
 
-
-    useEffect(() => {
-        async function getDoctors() {
-            const doc = db.collection('users')
-                .get()
-                .then((value) => {
-                    console.log(value)
-                })
-            const list = [];
-
-
-            setDoctors(list);
-            console.log(doctors)
-
-        }
-        getDoctors();
-
-
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            let isActive = true;
+            async function fetchPosts() {
+                db.collection('users')
+                    .where('isDoctor', '==', true)
+                    .get()
+                    .then((snapshoot) => {
+                        setDoctors([]);
+                        const list = [];
+                        snapshoot.docs.map(u => {
+                            list.push({
+                                ...u.data(),
+                                id: u.id,
+                            })
+                        })
+                        setDoctors(list);
+                    })
+            }
+            fetchPosts();
+            return () => {
+                isActive = false;
+            }
+        }, [])
+    )
 
 
     return (
@@ -234,8 +240,8 @@ export default function Cadastrar() {
                             <Picker
                                 style={{ color: 'white' }}
                                 dropdownIconColor={'white'}
-                                selectedValue={sexo}
-                                onValueChange={(value) => setSexo(value)}>
+                                selectedValue={docSelected}
+                                onValueChange={(value) => setDocSelected(value)}>
                                 <Picker.Item label="Selecione seu médico" value="" />
                                 {doctors.map((state) => (
                                     <Picker.Item

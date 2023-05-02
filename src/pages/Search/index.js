@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -9,56 +9,61 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { db } from "../../config";
 import SearchList from "../../components/SearchList";
+import { AuthContext } from '../../contexts/auth'
 
 export default function Search() {
   const [imput, setImput] = useState("");
   const [users, setUsers] = useState([]);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
-      if (imput === '' || imput === undefined) {
+    if (imput === '' || imput === undefined) {
 
-          const subscriber = db.collection('users').orderBy('nome')
-          .onSnapshot(snapshot => {
-              const list = [];
-              snapshot.forEach(doc => {
-                  //mostra só os pacientes
-                  if (doc.data().isDoctor == false) {
-                      list.push({
-                          ...doc.data(),
-                          id: doc.id
-                      })
-                  }
-
+      const subscriber = db.collection('users').orderBy('nome') .where('medico', '==', user.uid)
+        .onSnapshot(snapshot => {
+          const list = [];
+          snapshot.forEach(doc => {
+            //mostra só os pacientes
+            if (doc.data().isDoctor == false) {
+              list.push({
+                ...doc.data(),
+                id: doc.id
               })
-              console.log(list)
-              setUsers(list)
-          })
-          return;
-      }
-      setUsers([]);
-      const subscriber = db.collection('users')
-          .where('nome', '>=', imput)
-          .where('nome', '<=', imput + "\uf8ff")
-          .onSnapshot(snapshot => {
-              const list = [];
-              snapshot.forEach(doc => {
-                  //mostra só os pacientes
-                  if (doc.data().isDoctor == false) {
-                      list.push({
-                          ...doc.data(),
-                          id: doc.id
-                      })
-                  }
+            }
 
-              })
-              console.log(list)
-              setUsers(list)
           })
+          console.log(list)
+          setUsers(list)
+        })
+      return;
+    }
 
-      return () => subscriber();
+    setUsers([]);
+    const subscriber = db.collection('users')
+      .where('medico', '==', user.uid)
+      .where('nome', '>=', imput)
+      .where('nome', '<=', imput + "\uf8ff")
+      .onSnapshot(snapshot => {
+        const list = [];
+        snapshot.forEach(doc => {
+          //mostra só os pacientes
+          if (doc.data().isDoctor == false) {
+            list.push({
+              ...doc.data(),
+              id: doc.id
+            })
+          }
+
+        })
+        console.log(list)
+        console.log('uid: '+user.uid)
+        setUsers(list)
+      })
+
+    return () => subscriber();
   }, [imput])
 
- 
+
 
   return (
     <SafeAreaView style={styles.container}>

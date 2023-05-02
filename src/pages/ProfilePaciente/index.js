@@ -61,12 +61,6 @@ export default function ProfilePaciente() {
 
     useEffect(() => {
         async function getUser() {
-            //     console.log(user.uid)
-            //     const userprofile = db.collection('users').doc(user.uid).get()
-            //         .then((value) => {
-            //             console.log(value.data())
-            //             setUserP(value.data());
-            //         })
             const userProfileRef = db.collection('users').doc(user.uid);
             try {
                 const userProfile = await userProfileRef.get();
