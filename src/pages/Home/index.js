@@ -18,11 +18,9 @@ export default function Home() {
 
   useEffect(() => {
     async function getUser() {
-      console.log('aqui')
       const userprofile = db.collection('users').doc(user.uid).get()
         .then((value) => {
           setUserP(value.data());
-          console.log(value)
         })
     }
     getUser();

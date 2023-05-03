@@ -185,8 +185,8 @@ export default function AtualizarPerfilPaciente() {
 
       <View style={styles.picker}>
         <Picker
-          style={{ color: "white" }}
-          dropdownIconColor={"white"}
+          style={{ color: "black" }}
+          dropdownIconColor={"black"}
           selectedValue={sexo}
           onValueChange={(value) => setSexo(value)}
         >
@@ -203,8 +203,8 @@ export default function AtualizarPerfilPaciente() {
 
       <View style={styles.picker}>
         <Picker
-          style={{ color: "white" }}
-          dropdownIconColor={"white"}
+          style={{ color: "black" }}
+          dropdownIconColor={"black"}
           selectedValue={docSelected}
           onValueChange={(value) => setDocSelected(value)}
         >
@@ -227,8 +227,9 @@ const styles = StyleSheet.create({
     flex: 1,
     //backgroundColor: '#36393F',
     backgroundColor: "#a0a4a5",
-    justifyContent: "center",
-    alignItems: "center",
+    padding: '5%'
+    //justifyContent: "center",
+   // alignItems: "center",
   },
   title: {
     color: "#FFF",
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   imput: {
-    width: "80%",
+    width: "100%",
     marginTop: 12,
     backgroundColor: "transparent",
     borderColor: "#fff",
@@ -249,14 +250,14 @@ const styles = StyleSheet.create({
     borderColor: "white",
     borderRadius: 2,
     marginTop: 12,
-    width: "80%",
+    width: "100%",
   },
   btn: {
-    width: "80%",
+    width: "100%",
     backgroundColor: "#d04556",
     //595458
     borderRadius: 8,
-    marginTop: 15,
+    marginTop: 20,
     padding: 10,
     justifyContent: "center",
     alignItems: "center",

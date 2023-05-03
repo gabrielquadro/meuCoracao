@@ -1,10 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../../contexts/auth'
 import Header from '../../components/Header';
 import { db, app, firebase } from '../../config'
 import * as ImagePicker from 'expo-image-picker';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+
 
 export default function ProfilePaciente() {
     const navigation = useNavigation();
@@ -13,6 +14,7 @@ export default function ProfilePaciente() {
     const [userP, setUserP] = useState([]);
     const [image, setImage] = useState(null);
     const [loading, setIsLoading] = useState(true);
+    const [name, setName] = useState("");
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -58,21 +60,50 @@ export default function ProfilePaciente() {
 
 
 
-    useEffect(() => {
-        async function getUser() {
-            const userProfileRef = db.collection('users').doc(user.uid);
-            try {
-                const userProfile = await userProfileRef.get();
-                console.log(userProfile.data());
-                setUserP(userProfile.data())
-            } catch (error) {
-                console.error(error);
-            }
-        }
+    // useEffect(() => {
+    //     async function getUser() {
+    //         const userProfileRef = db.collection('users').doc(user.uid);
+    //         try {
+    //             const userProfile = await userProfileRef.get();
+    //             setUserP(userProfile.data())
+    //             setName(userProfile.data().nome)
+    //             setEmail(userProfile.data().email)
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //     }
 
-        getUser();
+    //     getUser();
+    //     getImageFromFirebase();
+    // }, [])
+
+    useEffect(() => {
+        db.collection("users")
+            .doc(user.uid)
+            .get()
+            .then((value) => {
+                setUserP(value.data());
+                setName(value.data().nome);
+            });
         getImageFromFirebase();
-    }, [])
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            let isActive = true;
+            db.collection("users")
+                .doc(user.uid)
+                .get()
+                .then((value) => {
+                    setUserP(value.data());
+                    setName(value.data().nome);
+                });
+            getImageFromFirebase();
+            return () => {
+                isActive = false;
+            };
+        }, [])
+    );
 
 
 
@@ -98,11 +129,7 @@ export default function ProfilePaciente() {
                 }
             </TouchableOpacity>
 
-
-
-
-
-            <Text style={styles.nome} >{userP.nome}</Text>
+            <Text style={styles.nome} >{name}</Text>
             <Text style={styles.email} >{user.email}</Text>
             <TouchableOpacity style={styles.btnAtt} onPress={() => navigation.navigate("AtualizarPerfilPaciente")}>
                 <Text style={styles.btnAttTxt} >Atualizar perfil</Text>
@@ -111,7 +138,7 @@ export default function ProfilePaciente() {
                 <Text style={styles.btnAttTxt} >Avalair o aplicativo</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSignOut} style={styles.btnSair}>
-                <Text style={{...styles.btnSairTxt}}>Sair</Text>
+                <Text style={{ ...styles.btnSairTxt }}>Sair</Text>
             </TouchableOpacity>
             {/* <Button title='Sair' onPress={handleSignOut}></Button> */}
         </View>
