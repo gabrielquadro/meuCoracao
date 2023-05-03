@@ -15,7 +15,6 @@ export default function ProfilePaciente() {
     const [loading, setIsLoading] = useState(true);
 
     const pickImage = async () => {
-        // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -105,14 +104,14 @@ export default function ProfilePaciente() {
 
             <Text style={styles.nome} >{userP.nome}</Text>
             <Text style={styles.email} >{user.email}</Text>
-            <TouchableOpacity style={styles.btnAtt}>
-                <Text style={styles.btnAttTxt} onPress={() => navigation.navigate("AtualizarPerfilPaciente")}>Atualizar perfil</Text>
+            <TouchableOpacity style={styles.btnAtt} onPress={() => navigation.navigate("AtualizarPerfilPaciente")}>
+                <Text style={styles.btnAttTxt} >Atualizar perfil</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btnAtt}>
-                <Text style={styles.btnAttTxt} onPress={() => navigation.navigate("Avaliar")}>Avalair o aplicativo</Text>
+            <TouchableOpacity style={styles.btnAtt} onPress={() => navigation.navigate("Avaliar")}>
+                <Text style={styles.btnAttTxt} >Avalair o aplicativo</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSignOut} style={styles.btnSair}>
-                <Text style={styles.btnSairTxt}>Sair</Text>
+                <Text style={{...styles.btnSairTxt}}>Sair</Text>
             </TouchableOpacity>
             {/* <Button title='Sair' onPress={handleSignOut}></Button> */}
         </View>
@@ -142,19 +141,7 @@ const styles = StyleSheet.create({
     },
     btnAtt: {
         marginTop: 16,
-        backgroundColor: '#428cfd',
-        width: '80%',
-        height: 40,
-        borderRadius: 4,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    btnAttTxt: {
-        fontSize: 18,
-        color: '#FFF'
-    },
-    btnSair: {
-        marginTop: 16,
+        // backgroundColor: '#428cfd',
         backgroundColor: '#ddd',
         width: '80%',
         height: 40,
@@ -162,9 +149,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    btnAttTxt: {
+        fontSize: 15,
+        color: '#000'
+    },
+    btnSair: {
+        marginTop: 16,
+        backgroundColor: '#ff4040',
+        width: '80%',
+        height: 40,
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
     btnSairTxt: {
-        fontSize: 18,
-        color: '#353840'
+        fontSize: 15,
+        color: '#fff'
     },
     img: {
         // width: 120,
