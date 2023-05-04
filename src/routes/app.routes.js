@@ -6,11 +6,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Feather } from '@expo/vector-icons';
 import Home from '../pages/Home';
 import ProfilePaciente from '../pages/ProfilePaciente';
-import Search from '../pages/Search';
 import AtualizarPerfilPaciente from '../pages/AtualizarPerfilPaciente';
 import Formulario from '../pages/Formulario';
 import Avaliar from '../pages/Avaliar'
 import FormularioDetail from '../pages/FormularioDetail';
+import FormularioList from '../pages/FormularioList';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -41,6 +41,16 @@ function StackRoutesProfile() {
     )
 }
 
+function StackRoutesForm() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="FormularioList" component={FormularioList} options={{ headerShown: false }} />
+            <Stack.Screen name="FormularioDetail" component={FormularioDetail}
+                options={{ title: 'Formulário', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+        </Stack.Navigator>
+    )
+}
+
 function AppRoutes() {
     return (
         <Tab.Navigator
@@ -62,13 +72,12 @@ function AppRoutes() {
                     }
                 }} />
 
-            {/* <Tab.Screen name="Search" component={Search}
+            <Tab.Screen name="FormularioListTab" component={StackRoutesForm}
                 options={{
                     tabBarIcon: ({ color, size }) => {
-                        return <Feather name="search" color={color} size={size} />
+                        return <Feather name="list" color={color} size={size} />
                     }
-                }}
-            /> */}
+                }} />
 
             <Tab.Screen name="ProfilePerfil" component={StackRoutesProfile}
                 options={{

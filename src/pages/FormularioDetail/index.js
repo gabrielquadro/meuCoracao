@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext , useEffect} from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { RadioButton, Checkbox } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
@@ -21,18 +21,30 @@ export default function FormularioDetail({ route }) {
     const [created, setCreated] = useState(item.created);
     const [update, setUpdate] = useState(item.dataModificacao ? item.dataModificacao : new Date());
     const [name, setName] = useState("");
+    const [dataTxt, setDataTxt] = useState(new Date());
 
 
-    const dataJson = JSON.parse(JSON.stringify(item?.created));
+    const dataJson = JSON.parse(JSON.stringify(item.dataModificacao != null ? item.dataModificacao : item.created));
 
-    function formatarData() {
-        const segundos = dataJson.seconds;
-        const nanossegundos = dataJson.nanoseconds;
+    function formatarData(segundos, nanossegundos) {
+        
         // Converter segundos e nanossegundos para milissegundos
         const milissegundos = segundos * 1000 + Math.floor(nanossegundos / 1000000);
+
         // Criar um objeto Date a partir dos milissegundos
         const data = new Date(milissegundos);
-        return data;
+
+        // Extrair os valores do dia, mês, ano, hora e minuto
+        const dia = data.getDate().toString().padStart(2, '0');
+        const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+        const ano = data.getFullYear().toString().padStart(4, '0');
+        const hora = data.getHours().toString().padStart(2, '0');
+        const minuto = data.getMinutes().toString().padStart(2, '0');
+
+        // Formatar a data no formato desejado
+        const dataFormatada = `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+
+        return dataFormatada;
     }
 
     const theme = {
@@ -73,46 +85,31 @@ export default function FormularioDetail({ route }) {
         navigation.goBack();
     }
 
-    function getNome(id){
-        let nome = '-';
-        db.collection("users")
-        .doc(id)
-        .get()
-        .then((value) => {
-            console.log('Nome: ' + value.data().nome)
-            setName(value.data().nome)
-        });
-    }
-
     useEffect(() => {
-        if(item.userModificacao){
+        if (item.userModificacao) {
             db.collection("users")
-            .doc(item.userModificacao)
-            .get()
-            .then((value) => {
-                console.log('Nome: ' + value.data().nome)
-                setName(value.data().nome)
-            });
-        }else{
+                .doc(item.userModificacao)
+                .get()
+                .then((value) => {
+                    setName(value.data().nome)
+                    setDataTxt(item.dataModificacao)
+                });
+        } else {
             db.collection("users")
-            .doc(item.user)
-            .get()
-            .then((value) => {
-                console.log('Nome: ' + value.data().nome)
-                setName(value.data().nome)
-            });
+                .doc(item.user)
+                .get()
+                .then((value) => {
+                    setName(value.data().nome)
+                    setDataTxt(item.created)
+
+                });
         }
     }, []);
 
     return (
         <ScrollView style={styles.container} >
             <View style={styles.containerS}>
-                {/* {item.userModificacao != null ?
-                    <Text>Ultima modificação feita por {name} em {item.userModificacao}</Text>
-                    :
-                    <Text>Ultima modificação feita por {name} em {item.userModificacao}</Text>
-                } */}
-                <Text>Ultima modificação feita por {name} em {}</Text>
+                <Text>Ultima modificação feita por {name} em {formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
                 <Text style={styles.question}>Pergunta 01?</Text>
                 <RadioButton.Group onValueChange={setSelection} value={isSelected} >
                     <View style={{ flexDirection: 'row' }}>
