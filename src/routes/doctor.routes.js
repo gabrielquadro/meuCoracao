@@ -7,6 +7,11 @@ import { Feather } from '@expo/vector-icons';
 import HomeMedico from '../pages/HomeMedico';
 import ProfilePaciente from '../pages/ProfilePaciente';
 import Search from '../pages/Search';
+import AtualizarPerfilPaciente from '../pages/AtualizarPerfilPaciente';
+import Formulario from '../pages/Formulario';
+import Avaliar from '../pages/Avaliar'
+import FormularioDetail from '../pages/FormularioDetail';
+import FormularioList from '../pages/FormularioList';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -15,6 +20,19 @@ function StackRoutes() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="HomeMedico" component={HomeMedico} options={{ headerShown: false }} />
+
+        </Stack.Navigator>
+    )
+}
+
+function StackRoutesProfile() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="Profile" component={ProfilePaciente} options={{ headerShown: false }} />
+            <Stack.Screen name="AtualizarPerfilPaciente" component={AtualizarPerfilPaciente}
+                options={{ title: 'Atualizar Perfil', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+            <Stack.Screen name="Avaliar" component={Avaliar}
+                options={{ title: 'Avaliar o aplicativo', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
 
         </Stack.Navigator>
     )
@@ -49,7 +67,7 @@ function AppRoutes() {
                 }}
             />
 
-            <Tab.Screen name="Profile" component={ProfilePaciente}
+            <Tab.Screen name="ProfileTab" component={StackRoutesProfile}
                 options={{
                     tabBarIcon: ({ color, size }) => {
                         return <Feather name="user" color={color} size={size} />
