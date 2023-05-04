@@ -10,6 +10,7 @@ import Search from '../pages/Search';
 import AtualizarPerfilPaciente from '../pages/AtualizarPerfilPaciente';
 import Formulario from '../pages/Formulario';
 import Avaliar from '../pages/Avaliar'
+import FormularioDetail from '../pages/FormularioDetail';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -19,6 +20,8 @@ function StackRoutes() {
         <Stack.Navigator>
             <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
             <Stack.Screen name="Formulario" component={Formulario}
+                options={{ title: 'Novo formulário', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+            <Stack.Screen name="FormularioDetail" component={FormularioDetail}
                 options={{ title: 'Formulário', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
 
         </Stack.Navigator>

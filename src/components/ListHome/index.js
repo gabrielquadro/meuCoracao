@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { db, app, firebase } from "../../config";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 
 
 function ListHome({ data }) {
     const dataJson = JSON.parse(JSON.stringify(data?.created));
+    const navigation = useNavigation();
 
     function formatarData(segundos, nanossegundos) {
         // Converter segundos e nanossegundos para milissegundos
@@ -27,24 +30,58 @@ function ListHome({ data }) {
         return dataFormatada;
     }
 
+    function deleteForm(id){
+        console.log(id)
+        db.collection("formulario")
+        .doc(id.id)
+        .delete()
+        .then(() => {
+          console.log("deletado");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    function handleDelete(id) {
+        Alert.alert(
+            'Confirmação',
+            'Deseja remover?',
+            [
+              {
+                text: 'Não',
+                style: 'cancel'
+              },
+              {
+                text: 'Sim',
+                onPress: () => deleteForm(id)
+              }
+            ],
+            { cancelable: false }
+          );
+        
+    }
+
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data })}>
             <Text>{formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
-        </View>
+            <MaterialIcons onPress={(value) => handleDelete(data)} name="delete" size={26} color="red" />
+        </TouchableOpacity>
     )
 }
 
 
 const styles = StyleSheet.create({
     container: {
+        flexDirection: 'row',
         marginTop: 8,
         margin: 8,
         backgroundColor: '#FFF',
         borderRadius: 8,
         elevation: 3,
         padding: 10,
-        alignItems:'center', 
-        justifyContent:'center'
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
 
 });
