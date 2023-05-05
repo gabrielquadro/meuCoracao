@@ -16,15 +16,12 @@ export default function AtualizarPerfilMedico() {
   const { signUp, signIn, loadingAuth, signUpMedico, signUpPaciente } =
     useContext(AuthContext);
   const [selectedState, setSelectedState] = useState("");
-  const [sexo, setSexo] = useState("");
-  const [value, setValue] = useState("");
   const [created, setCreated] = useState("");
   const [isDoc, setIsDoc] = useState(false);
-  const [doctors, setDoctors] = useState([]);
-  const [docSelected, setDocSelected] = useState([]);
   const navigation = useNavigation();
   const { signOut, user } = useContext(AuthContext);
   const [userP, setUserP] = useState({});
+  const [crm, setCRM] = useState("");
 
   const theme = {
     ...DefaultTheme,
@@ -65,41 +62,6 @@ export default function AtualizarPerfilMedico() {
     { label: "Tocantins", value: "TO" },
   ];
 
-  const sexoList = [
-    { label: "Masculino", value: "M" },
-    { label: "Feminino", value: "F" },
-  ];
-
-  const handleStateChange = (value) => {
-    setSelectedState(value);
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
-      async function fetchPosts() {
-        db.collection("users")
-          .where("isDoctor", "==", true)
-          .get()
-          .then((snapshoot) => {
-            setDoctors([]);
-            const list = [];
-            snapshoot.docs.map((u) => {
-              list.push({
-                ...u.data(),
-                id: u.id,
-              });
-            });
-            setDoctors(list);
-          });
-      }
-      fetchPosts();
-      return () => {
-        isActive = false;
-      };
-    }, [])
-  );
-
   useEffect(() => {
     db.collection("users")
       .doc(user.uid)
@@ -108,11 +70,8 @@ export default function AtualizarPerfilMedico() {
         console.log(value.data());
         setUserP(value.data());
         setName(value.data().nome);
-        setValue(value.data().dataNascimento);
-        setNameM(value.data().nomeMae);
-        setPhoneNumber(value.data().telefone);
-        setSexo(value.data().sexo);
-        setDocSelected(value.data().medico);
+        setSelectedState(value.data().estado)
+        setCRM(value.data().crm)
         setCreated(value.data().createdAt);
         setIsDoc(value.data().isDoctor);
       });
@@ -123,13 +82,10 @@ export default function AtualizarPerfilMedico() {
       .doc(user.uid)
       .set({
         createdAt: created,
-        telefone: phoneNumber,
-        dataNascimento: value,
         isDoctor: isDoc,
-        medico: docSelected,
-        nome: name,
-        nomeMae: nameM,
-        sexo: sexo,
+        estado: selectedState,
+        crm : crm,
+        nome: name
       })
       .then(() => {
         console.log("Atualizou");
@@ -140,9 +96,49 @@ export default function AtualizarPerfilMedico() {
     navigation.goBack();
   }
 
+  const handleStateChange = (value) => {
+    setSelectedState(value);
+  }
+
   return (
     <View style={styles.container}>
-      <Text>att medico</Text>
+      <TextInput
+        theme={theme}
+        label='Nome completo'
+        mode='flat'
+        textColor="#000"
+        style={styles.imput}
+        value={name}
+        onChangeText={(text) => setName(text)}
+      />
+      <TextInput
+        theme={theme}
+        label='CRM'
+        mode='flat'
+        textColor="#000"
+        style={styles.imput}
+        value={crm}
+        onChangeText={(text) => setCRM(text)}
+      />
+      <View style={styles.picker}>
+        <Picker
+          style={{ color: 'white' }}
+          dropdownIconColor={'white'}
+          selectedValue={selectedState}
+          onValueChange={handleStateChange}>
+          <Picker.Item label="Selecione um estado" value="" />
+          {stateList.map((state) => (
+            <Picker.Item
+              key={state.value}
+              label={state.label}
+              value={state.value}
+            />
+          ))}
+        </Picker>
+      </View>
+      <TouchableOpacity style={styles.btn} onPress={updtade}>
+        <Text style={styles.btnTxt}>Atualizar perfil</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -154,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#a0a4a5",
     padding: '5%'
     //justifyContent: "center",
-   // alignItems: "center",
+    // alignItems: "center",
   },
   title: {
     color: "#FFF",
