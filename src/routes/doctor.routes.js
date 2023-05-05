@@ -12,7 +12,7 @@ import Formulario from '../pages/Formulario';
 import Avaliar from '../pages/Avaliar'
 import FormularioDetail from '../pages/FormularioDetail';
 import FormularioList from '../pages/FormularioList';
-
+import AtualizarPerfilMedico from '../pages/AtualizarPerfilMedico';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +29,9 @@ function StackRoutesProfile() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Profile" component={ProfilePaciente} options={{ headerShown: false }} />
-            <Stack.Screen name="AtualizarPerfilPaciente" component={AtualizarPerfilPaciente}
+            <Stack.Screen name="AtualizarPerfilMedico" component={AtualizarPerfilMedico}
+                options={{ title: 'Atualizar Perfil', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+                <Stack.Screen name="AtualizarPerfilPaciente" component={AtualizarPerfilPaciente}
                 options={{ title: 'Atualizar Perfil', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
             <Stack.Screen name="Avaliar" component={Avaliar}
                 options={{ title: 'Avaliar o aplicativo', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
