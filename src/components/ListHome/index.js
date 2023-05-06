@@ -65,7 +65,7 @@ function ListHome({ data }) {
     return (
         <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data })}>
             <Text>{formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
-            <MaterialIcons onPress={(value) => handleDelete(data)} name="delete" size={26} color="red" />
+            {/* <MaterialIcons onPress={(value) => handleDelete(data)} name="delete" size={26} color="red" /> */}
         </TouchableOpacity>
     )
 }
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         marginTop: 8,
-        margin: 8,
+        margin: 5,
         backgroundColor: '#FFF',
         borderRadius: 8,
         elevation: 3,

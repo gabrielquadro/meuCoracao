@@ -22,12 +22,16 @@ export default function FormularioDetail({ route }) {
     const [update, setUpdate] = useState(item.dataModificacao ? item.dataModificacao : new Date());
     const [name, setName] = useState("");
     const [dataTxt, setDataTxt] = useState(new Date());
+    const [isDoc, setIsDoc] = useState(false);
+    const [diag, setDiag] = useState('');
+    const [doc, setDoc] = useState('');
+
 
 
     const dataJson = JSON.parse(JSON.stringify(item.dataModificacao != null ? item.dataModificacao : item.created));
 
     function formatarData(segundos, nanossegundos) {
-        
+
         // Converter segundos e nanossegundos para milissegundos
         const milissegundos = segundos * 1000 + Math.floor(nanossegundos / 1000000);
 
@@ -73,8 +77,8 @@ export default function FormularioDetail({ route }) {
             opcao2: checked3 ? 'S' : 'N',
             pergunta3: selectedLanguage ? selectedLanguage : 'opção1',
             userModificacao: user.uid,
-            dataModificacao: new Date()
-
+            dataModificacao: new Date(),
+            medico: doc
         })
             .then(() => {
                 console.log('Atualiado')
@@ -92,7 +96,12 @@ export default function FormularioDetail({ route }) {
                 .get()
                 .then((value) => {
                     setName(value.data().nome)
+                    setIsDoc(value.data().isDoctor)
+                    if (value.data().diagnostico != null) {
+                        setDiag(value.data().diagnostico)
+                    }
                     setDataTxt(item.dataModificacao)
+                    setDoc(value.data().medico)
                 });
         } else {
             db.collection("users")
@@ -100,7 +109,9 @@ export default function FormularioDetail({ route }) {
                 .get()
                 .then((value) => {
                     setName(value.data().nome)
+                    setIsDoc(value.data().isDoctor)
                     setDataTxt(item.created)
+                    setDoc(value.data().medico)
 
                 });
         }
@@ -110,6 +121,21 @@ export default function FormularioDetail({ route }) {
         <ScrollView style={styles.container} >
             <View style={styles.containerS}>
                 <Text>Ultima modificação feita por {name} em {formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
+                {diag ?
+                    <TextInput
+                        theme={theme}
+                        label='Diagnostico'
+                        mode='flat'
+                        textColor="#000"
+                        style={styles.imput}
+                        value={diag}
+                        onChangeText={(text) => setDiag(text)}
+                        editable={!isDoc}
+                    />
+                    :
+                    <View></View>
+                }
+
                 <Text style={styles.question}>Pergunta 01?</Text>
                 <RadioButton.Group onValueChange={setSelection} value={isSelected} >
                     <View style={{ flexDirection: 'row' }}>
@@ -201,5 +227,12 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: '5%',
         backgroundColor: "#a0a4a5",
+    },
+    imput: {
+        width: "100%",
+        marginTop: 12,
+        backgroundColor: "transparent",
+        borderColor: "#fff",
+        borderWidth: 1,
     },
 });

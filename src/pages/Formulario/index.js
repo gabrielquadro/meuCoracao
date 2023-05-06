@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext , useEffect} from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { RadioButton, Checkbox } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
@@ -17,6 +17,7 @@ export default function Formulario() {
     const navigation = useNavigation();
     const { user } = useContext(AuthContext);
     const [isSelected, setSelection] = useState('P');
+    const [doc, setDoc] = useState('');
 
 
     const theme = {
@@ -35,6 +36,14 @@ export default function Formulario() {
     function close() {
         pickerRef.current.blur();
     }
+    useEffect(() => {
+        db.collection("users")
+          .doc(user.uid)
+          .get()
+          .then((value) => {
+            setDoc(value.data().medico);
+          });
+      }, []);
 
     async function handleSave() {
         await db.collection('formulario').add({
@@ -43,7 +52,8 @@ export default function Formulario() {
             pergunta01: isSelected ? isSelected : '',
             opcao1: checked2 ? 'S' : 'N',
             opcao2: checked3 ? 'S' : 'N',
-            pergunta3: selectedLanguage ? selectedLanguage : 'opção1'
+            pergunta3: selectedLanguage ? selectedLanguage : 'opção1',
+            medico: doc
         })
             .then(() => {
                 console.log('Formulario criado')

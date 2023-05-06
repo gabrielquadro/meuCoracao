@@ -13,6 +13,11 @@ import Avaliar from '../pages/Avaliar'
 import FormularioDetail from '../pages/FormularioDetail';
 import FormularioList from '../pages/FormularioList';
 import AtualizarPerfilMedico from '../pages/AtualizarPerfilMedico';
+import PerfilPacienteM from '../pages/PerfilPacienteM'
+import FormularioListPacientes from '../pages/FormularioListPacientes';
+
+
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -25,14 +30,29 @@ function StackRoutes() {
     )
 }
 
+function StackRoutesSearch() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="Search" component={Search} options={{ headerShown: false }} />
+            <Stack.Screen name="PerfilPacienteM" component={PerfilPacienteM}
+                options={{ title: 'Perfil do paciente', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+            <Stack.Screen name="FormularioDetail" component={FormularioDetail}
+                options={{ title: 'Formulário', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+            <Stack.Screen name="AtualizarPerfilPaciente" component={AtualizarPerfilPaciente}
+                options={{ title: 'Atualizar Perfil', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+            <Stack.Screen name="FormularioListPacientes" component={FormularioListPacientes}
+                options={{ title: 'Formularios', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+        </Stack.Navigator>
+    )
+}
+
 function StackRoutesProfile() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Profile" component={ProfilePaciente} options={{ headerShown: false }} />
             <Stack.Screen name="AtualizarPerfilMedico" component={AtualizarPerfilMedico}
                 options={{ title: 'Atualizar Perfil', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
-                <Stack.Screen name="AtualizarPerfilPaciente" component={AtualizarPerfilPaciente}
-                options={{ title: 'Atualizar Perfil', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+
             <Stack.Screen name="Avaliar" component={Avaliar}
                 options={{ title: 'Avaliar o aplicativo', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
 
@@ -61,7 +81,7 @@ function AppRoutes() {
                     }
                 }} />
 
-            <Tab.Screen name="Search" component={Search}
+            <Tab.Screen name="SearchTab" component={StackRoutesSearch}
                 options={{
                     tabBarIcon: ({ color, size }) => {
                         return <Feather name="search" color={color} size={size} />

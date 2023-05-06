@@ -39,7 +39,7 @@ export default function SearchList({ data }) {
   };
 
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('PerfilPacienteM', { item: data })}>
       {urlI ? (
         <Image style={styles.img} source={{ uri: urlI }} />
       ) : (

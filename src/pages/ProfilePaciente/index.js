@@ -86,11 +86,12 @@ export default function ProfilePaciente() {
   // }, [])
 
   useEffect(() => {
+    console.log(user.uid)
     db.collection("users")
       .doc(user.uid)
       .get()
       .then((value) => {
-        setUserP(value.data());
+        setUserP(JSON.stringify(value.data()));
         setName(value.data().nome);
         setMedico(value.data().isDoctor);
       });
@@ -119,7 +120,8 @@ export default function ProfilePaciente() {
     if (medico) {
       navigation.navigate("AtualizarPerfilMedico");
     } else {
-      navigation.navigate("AtualizarPerfilPaciente");
+      console.log(userP)
+      navigation.navigate("AtualizarPerfilPaciente", { user: userP });
     }
   }
 

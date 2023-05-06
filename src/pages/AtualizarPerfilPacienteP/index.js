@@ -7,8 +7,7 @@ import { AuthContext } from "../../contexts/auth";
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 import { db, app, firebase } from "../../config";
 
-export default function AtualizarPerfilPaciente({ route }) {
-  const { user }  = route.params;
+export default function AtualizarPerfilPaciente() {
   const [name, setName] = useState("");
   const [nameM, setNameM] = useState("");
   const [email, setEmail] = useState("");
@@ -24,7 +23,7 @@ export default function AtualizarPerfilPaciente({ route }) {
   const [doctors, setDoctors] = useState([]);
   const [docSelected, setDocSelected] = useState([]);
   const navigation = useNavigation();
-  const { signOut } = useContext(AuthContext);
+  const { signOut , user } = useContext(AuthContext);
   const [userP, setUserP] = useState({});
   const [info, setInfo] = useState('');
 
@@ -104,7 +103,7 @@ export default function AtualizarPerfilPaciente({ route }) {
 
   useEffect(() => {
     db.collection("users")
-      .doc(user.id)
+      .doc(user.uid)
       .get()
       .then((value) => {
         console.log(value.data());
@@ -123,7 +122,7 @@ export default function AtualizarPerfilPaciente({ route }) {
 
   async function updtade() {
     db.collection("users")
-      .doc(user.id)
+      .doc(user.uid)
       .set({
         createdAt: created,
         telefone: phoneNumber,

@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Feather } from '@expo/vector-icons';
 import Home from '../pages/Home';
 import ProfilePaciente from '../pages/ProfilePaciente';
-import AtualizarPerfilPaciente from '../pages/AtualizarPerfilPaciente';
+import AtualizarPerfilPacienteP from '../pages/AtualizarPerfilPacienteP';
 import Formulario from '../pages/Formulario';
 import Avaliar from '../pages/Avaliar'
 import FormularioDetail from '../pages/FormularioDetail';
@@ -32,7 +32,7 @@ function StackRoutesProfile() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Profile" component={ProfilePaciente} options={{ headerShown: false }} />
-            <Stack.Screen name="AtualizarPerfilPaciente" component={AtualizarPerfilPaciente}
+            <Stack.Screen name="AtualizarPerfilPaciente" component={AtualizarPerfilPacienteP}
                 options={{ title: 'Atualizar Perfil', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
             <Stack.Screen name="Avaliar" component={Avaliar}
                 options={{ title: 'Avaliar o aplicativo', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
