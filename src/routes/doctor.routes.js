@@ -15,7 +15,7 @@ import FormularioList from '../pages/FormularioList';
 import AtualizarPerfilMedico from '../pages/AtualizarPerfilMedico';
 import PerfilPacienteM from '../pages/PerfilPacienteM'
 import FormularioListPacientes from '../pages/FormularioListPacientes';
-
+import FormularioListMedico from '../pages/FormularioListMedico';
 
 
 const Tab = createBottomTabNavigator();
@@ -25,7 +25,21 @@ function StackRoutes() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="HomeMedico" component={HomeMedico} options={{ headerShown: false }} />
+            <Stack.Screen name="FormularioDetail" component={FormularioDetail}
+                options={{ title: 'Formulário', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+            <Stack.Screen name="FormularioListMedico" component={FormularioListMedico}
+                options={{ title: 'Lista de Formulários', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
+        </Stack.Navigator>
+    )
+}
 
+function StackRoutesForm() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="FormularioListMedico" component={FormularioListMedico}
+                options={{ headerShown: false }}  />
+            <Stack.Screen name="FormularioDetail" component={FormularioDetail}
+                options={{ title: 'Formulário', headerTintColor: '#FFF', headerStyle: { backgroundColor: '#36393F' } }} />
         </Stack.Navigator>
     )
 }
@@ -80,6 +94,14 @@ function AppRoutes() {
                         return <Feather name="home" color={color} size={size} />
                     }
                 }} />
+
+            <Tab.Screen name="FormTab" component={StackRoutesForm}
+                options={{
+                    tabBarIcon: ({ color, size }) => {
+                        return <Feather name="list" color={color} size={size} />
+                    }
+                }}
+            />
 
             <Tab.Screen name="SearchTab" component={StackRoutesSearch}
                 options={{

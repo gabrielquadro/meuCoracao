@@ -5,7 +5,8 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import { db, app, firebase } from '../../config'
 import { AuthContext } from '../../contexts/auth'
-import ListHome from "../../components/ListHome";
+// import ListHome from "../../components/ListHome";
+import ListFormMedico from '../../pages/ListFormMedico'
 
 export default function Home() {
 
@@ -32,7 +33,7 @@ export default function Home() {
         db.collection('formulario')
           .where('medico', '==', user.uid)
           .orderBy('created', 'desc')
-          .limit(10)
+          .limit(5)
           .get()
           .then((snapshoot) => {
             setForms([]);
@@ -60,22 +61,25 @@ export default function Home() {
     <View style={styles.container}>
       <Header />
       <View style={styles.container2}>
-        {/* <Text style={{ fontSize: 30 }}>Home médico</Text> */}
-        
+
         <Text style={{ fontSize: 20, marginBottom: 20 }} >Bem vindo {userP.nome}</Text>
 
-        <Text style={{ fontSize: 20, marginTop: 30, marginBottom: 20 }} >Úlmos registros do seus pacientes</Text>
-        
+
         <TouchableOpacity style={styles.btnAtt} onPress={() => navigation.navigate("SearchTab")}>
           <Text style={styles.btnAttTxt}>Vizualiar todos os pacientes</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.btnAtt} onPress={() => navigation.navigate("FormTab")}>
+          <Text style={styles.btnAttTxt}>Vizualiar todos os formularios</Text>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 20, marginTop: 20, marginBottom: 20 }} >Útlmos registros do seus pacientes</Text>
 
         <FlatList
           style={styles.list}
           data={form}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
-            <ListHome
+            <ListFormMedico
               data={item}
             />
           )}
@@ -123,6 +127,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20
+    marginBottom: 20,
+    paddingHorizontal: 10,
   },
 });

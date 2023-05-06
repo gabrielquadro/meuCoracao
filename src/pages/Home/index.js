@@ -67,7 +67,7 @@ export default function Home() {
         {/* <Text style={{ fontSize: 20 }}>Home paciente</Text> */}
         <Text style={{ fontSize: 20, marginBottom: 20 }} >Bem vindo {userP.nome}</Text>
 
-        <Text style={{ fontSize: 20, marginTop: 30, marginBottom: 20 }} >Úlmos registros</Text>
+        <Text style={{ fontSize: 20, marginTop: 30, marginBottom: 20 }} >Útlmos registros</Text>
 
         <FlatList
           style={styles.list}

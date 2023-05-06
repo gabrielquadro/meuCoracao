@@ -101,7 +101,11 @@ export default function FormularioDetail({ route }) {
                         setDiag(value.data().diagnostico)
                     }
                     setDataTxt(item.dataModificacao)
-                    setDoc(value.data().medico)
+                    if (item.medico) {
+                        setDoc(item.medico)
+                    }else{
+                        setDoc(value.data().medico)
+                    }
                 });
         } else {
             db.collection("users")
@@ -112,7 +116,6 @@ export default function FormularioDetail({ route }) {
                     setIsDoc(value.data().isDoctor)
                     setDataTxt(item.created)
                     setDoc(value.data().medico)
-
                 });
         }
     }, []);
