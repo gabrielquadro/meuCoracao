@@ -12,7 +12,6 @@ function Routes() {
     const { signed, loading } = useContext(AuthContext);
     const { signOut, user } = useContext(AuthContext);
     const [userP, setUserP] = useState([]);
-    
     async function getUser() {
         const userprofile = db.collection('users').doc(user?.uid).get()
             .then((value) => {
@@ -30,7 +29,7 @@ function Routes() {
     }
 
     return (
-        signed ? userP?.isDoctor? <DocRoutes /> : <AppRoutes /> : <AuthRoutes />
+        signed ? userP?.isDoctor ? <DocRoutes /> : <AppRoutes /> : <AuthRoutes />
         //signed ? <AppRoutes /> : <AuthRoutes />
     )
 }

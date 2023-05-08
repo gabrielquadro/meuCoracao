@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback , useEffect} from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import { FontAwesome, AntDesign } from "@expo/vector-icons";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import {
@@ -11,7 +11,7 @@ import {
   ScrollView,
   Button
 } from "react-native";
-import { TextInput, RadioButton } from 'react-native-paper';
+import { TextInput, RadioButton, DatePicker, Paragraph, Dialog, Portal, } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { AuthContext } from "../../contexts/auth";
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
@@ -36,7 +36,17 @@ export default function Login() {
   const [doctors, setDoctors] = useState([]);
   const [docSelected, setDocSelected] = useState([]);
   const navigation = useNavigation();
+  const [date, setDate] = useState(new Date());
+  const [visible, setVisible] = useState(false);
+  const [day, setDay] = useState('');
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
 
+  const handleDateChange = (newDate) => {
+    console.log(newDate)
+    setDate(newDate);
+    setVisible(false);
+  };
 
 
   const theme = {
@@ -107,15 +117,27 @@ export default function Login() {
       }
     } else {
       //cadastro de paciente
-      if (!name || !email || !senha || !phoneNumber || !nameM || !value || !sexo || !docSelected) {
+      if (!name || !email || !senha || !phoneNumber || !nameM || !year || !month || !day || !sexo || !docSelected) {
         Alert.alert("Informe todos os campos.");
         return;
       } else {
-        await signUpPaciente(email, senha, name, phoneNumber, nameM, value, sexo , docSelected);
+        await signUpPaciente(email, senha, name, phoneNumber, nameM, sexo, docSelected, year, month, day);
       }
 
     }
   }
+
+  const handleDayChange = (value) => {
+    setDay(value);
+  };
+
+  const handleMonthChange = (value) => {
+    setMonth(value);
+  };
+
+  const handleYearChange = (value) => {
+    setYear(value);
+  };
 
   if (login) {
     return (
@@ -157,9 +179,9 @@ export default function Login() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.signUpBtn} onPress={() => navigation.navigate("Cadastrar")}>
-          <Text 
-          // onPress={() => setLogin(!login)}
-           style={styles.signUpBtnTxt}>
+          <Text
+            // onPress={() => setLogin(!login)}
+            style={styles.signUpBtnTxt}>
             Cadastrar
           </Text>
         </TouchableOpacity>
@@ -206,12 +228,45 @@ export default function Login() {
               label='Nome'
               mode='flat'
               textColor="#000"
-              style={styles.imput}
+              style={{ ...styles.imput, marginBottom: 12 }}
               value={name}
               onChangeText={(text) => setName(text)}
             />
+            <Text style={{ color: 'white' , width:'80%', marginBottom: 12}}>Data de nascimento</Text>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', width: '80%', alignItems: 'center' }}>
+              <TextInput
+                theme={theme}
+                mode='flat'
+                style={{ ...styles.imputD, marginRight: 5 }}
+                placeholder="Dia"
+                value={day}
+                onChangeText={handleDayChange}
+                keyboardType="number-pad"
+                maxLength={2}
+              />
+              <Text style={{ color: '#fff', fontSize: 30, marginRight: 5 }}>/</Text>
+              <TextInput
+                theme={theme}
+                style={{ ...styles.imputD, marginRight: 5 }}
+                placeholder="Mês"
+                value={month}
+                onChangeText={handleMonthChange}
+                keyboardType="number-pad"
+                maxLength={2}
+              />
+              <Text style={{ color: '#fff', fontSize: 30, marginRight: 5 }}>/</Text>
+              <TextInput
+                theme={theme}
+                style={styles.imputD}
+                placeholder="Ano"
+                value={year}
+                onChangeText={handleYearChange}
+                keyboardType="number-pad"
+                maxLength={4}
+              />
+            </View>
 
-            <TextInput
+            {/* <TextInput
               theme={theme}
               label='Data de nascimento'
               mode='flat'
@@ -219,7 +274,7 @@ export default function Login() {
               style={styles.imput}
               value={value}
               onChangeText={(text) => setValue(text)}
-            />
+            /> */}
 
             <TextInput
               theme={theme}
@@ -414,6 +469,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderColor: '#fff',
     borderWidth: 1,
+  },
+  imputD: {
+    flex: 1,
+    //width: "80%",
+    //marginTop: 12,
+    backgroundColor: 'transparent',
+    borderColor: '#fff',
+    borderWidth: 1
   },
   btn: {
     width: "80%",

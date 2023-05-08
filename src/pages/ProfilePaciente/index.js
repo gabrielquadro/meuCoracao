@@ -12,6 +12,7 @@ import Header from "../../components/Header";
 import { db, app, firebase } from "../../config";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import Constants from 'expo-constants';
 
 export default function ProfilePaciente() {
   const navigation = useNavigation();
@@ -22,6 +23,7 @@ export default function ProfilePaciente() {
   const [loading, setIsLoading] = useState(true);
   const [name, setName] = useState("");
   const [medico, setMedico] = useState(false);
+  const appVersion = Constants.manifest.version;
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -158,7 +160,25 @@ export default function ProfilePaciente() {
       <TouchableOpacity onPress={handleSignOut} style={styles.btnSair}>
         <Text style={{ ...styles.btnSairTxt }}>Sair</Text>
       </TouchableOpacity>
-      {/* <Button title='Sair' onPress={handleSignOut}></Button> */}
+      <View style={{
+        position: 'absolute',
+        bottom: 20,
+        alignItems: 'center'
+      }}>
+        <View style={{marginBottom: 30}}>
+          <Text style={{
+            color: "#f1f1f1", fontWeight: 'bold'
+          }}>Versão do aplicativo: {appVersion}</Text>
+        </View>
+
+        <Text style={{
+          color: "#f1f1f1", fontWeight: 'bold'
+        }}>Desenvolvido por: Gabriel Longhi Quadro</Text>
+        <Text style={{
+          color: "#f1f1f1", fontWeight: 'bold'
+        }}>Contato: gabrielquadro@gmail.com</Text>
+      </View>
+
     </View>
   );
 }

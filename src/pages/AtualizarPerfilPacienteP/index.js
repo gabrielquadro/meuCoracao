@@ -17,15 +17,18 @@ export default function AtualizarPerfilPaciente() {
     useContext(AuthContext);
   const [selectedState, setSelectedState] = useState("");
   const [sexo, setSexo] = useState("");
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [created, setCreated] = useState("");
   const [isDoc, setIsDoc] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [docSelected, setDocSelected] = useState([]);
   const navigation = useNavigation();
-  const { signOut , user } = useContext(AuthContext);
+  const { signOut, user } = useContext(AuthContext);
   const [userP, setUserP] = useState({});
   const [info, setInfo] = useState('');
+  const [day, setDay] = useState('');
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
 
   const theme = {
     ...DefaultTheme,
@@ -75,6 +78,18 @@ export default function AtualizarPerfilPaciente() {
     setSelectedState(value);
   };
 
+  const handleDayChange = (value) => {
+    setDay(value);
+  };
+
+  const handleMonthChange = (value) => {
+    setMonth(value);
+  };
+
+  const handleYearChange = (value) => {
+    setYear(value);
+  };
+
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
@@ -102,6 +117,7 @@ export default function AtualizarPerfilPaciente() {
   );
 
   useEffect(() => {
+
     db.collection("users")
       .doc(user.uid)
       .get()
@@ -109,7 +125,7 @@ export default function AtualizarPerfilPaciente() {
         console.log(value.data());
         setUserP(value.data());
         setName(value.data().nome);
-        setValue(value.data().dataNascimento);
+        // setValue(JSON.parse(JSON.stringify(value.data().dataNascimento)));
         setNameM(value.data().nomeMae);
         setPhoneNumber(value.data().telefone);
         setSexo(value.data().sexo);
@@ -117,22 +133,29 @@ export default function AtualizarPerfilPaciente() {
         setCreated(value.data().createdAt);
         setIsDoc(value.data().isDoctor);
         setInfo(value.data().infoAdd1 ? value.data().infoAdd1 : '')
+        setDay(value.data().diaNascimento)
+        setMonth(value.data().mesNascimento)
+        setYear(value.data().anoNascimento)
       });
   }, []);
 
   async function updtade() {
+    console.log(user.uid)
     db.collection("users")
       .doc(user.uid)
       .set({
         createdAt: created,
         telefone: phoneNumber,
-        dataNascimento: value,
+        dataNascimento: new Date(year, month - 1, day),
         isDoctor: isDoc,
         medico: docSelected,
         nome: name,
         nomeMae: nameM,
         sexo: sexo,
-        infoAdd1: info
+        infoAdd1: info,
+        diaNascimento: day,
+        mesNascimento: month,
+        anoNascimento : year
       })
       .then(() => {
         console.log("Atualizou");
@@ -144,7 +167,7 @@ export default function AtualizarPerfilPaciente() {
   }
 
   return (
-    <ScrollView style={styles.container}>  
+    <ScrollView style={styles.container}>
       <TextInput
         theme={theme}
         label="Nome"
@@ -154,16 +177,40 @@ export default function AtualizarPerfilPaciente() {
         value={name}
         onChangeText={(text) => setName(text)}
       />
+      <Text style={{ color: 'white', width: '80%', marginVertical: 12 }}>Data de nascimento</Text>
 
-      <TextInput
-        theme={theme}
-        label="Data de nascimento"
-        mode="flat"
-        textColor="#000"
-        style={styles.imput}
-        value={value}
-        onChangeText={(text) => setValue(text)}
-      />
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+        <TextInput
+          theme={theme}
+          mode='flat'
+          style={{ ...styles.imputD, marginRight: 5 }}
+          placeholder="Dia"
+          value={day}
+          onChangeText={handleDayChange}
+          keyboardType="number-pad"
+          maxLength={2}
+        />
+        <Text style={{ color: '#fff', fontSize: 30, marginRight: 5 }}>/</Text>
+        <TextInput
+          theme={theme}
+          style={{ ...styles.imputD, marginRight: 5 }}
+          placeholder="Mês"
+          value={month}
+          onChangeText={handleMonthChange}
+          keyboardType="number-pad"
+          maxLength={2}
+        />
+        <Text style={{ color: '#fff', fontSize: 30, marginRight: 5 }}>/</Text>
+        <TextInput
+          theme={theme}
+          style={styles.imputD}
+          placeholder="Ano"
+          value={year}
+          onChangeText={handleYearChange}
+          keyboardType="number-pad"
+          maxLength={4}
+        />
+      </View>
 
       <TextInput
         theme={theme}
@@ -218,7 +265,7 @@ export default function AtualizarPerfilPaciente() {
         </Picker>
       </View>
 
-      <Text style={{marginTop: 10}}>Informações específicas</Text>
+      <Text style={{ marginTop: 10 }}>Informações específicas</Text>
       <TextInput
         theme={theme}
         label="Informação especifica 1"
@@ -243,7 +290,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#a0a4a5",
     padding: '5%'
     //justifyContent: "center",
-   // alignItems: "center",
+    // alignItems: "center",
   },
   title: {
     color: "#FFF",
@@ -279,5 +326,11 @@ const styles = StyleSheet.create({
   btnTxt: {
     color: "#FFF",
     fontSize: 15,
+  },
+  imputD: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    borderColor: '#fff',
+    borderWidth: 1
   },
 });

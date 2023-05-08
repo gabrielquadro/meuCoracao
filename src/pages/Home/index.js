@@ -8,6 +8,7 @@ import { AuthContext } from '../../contexts/auth'
 import ListHome from "../../components/ListHome";
 
 
+
 export default function Home() {
   const navigation = useNavigation();
   const [userP, setUserP] = useState([]);
@@ -57,6 +58,9 @@ export default function Home() {
     }, [])
   )
 
+  function handleForm(item) {
+    navigation.navigate("FormularioListTab", { user: item });
+  }
 
 
   return (
@@ -68,6 +72,10 @@ export default function Home() {
         <Text style={{ fontSize: 20, marginBottom: 20 }} >Bem vindo {userP.nome}</Text>
 
         <Text style={{ fontSize: 20, marginTop: 30, marginBottom: 20 }} >Útlmos registros</Text>
+
+        <TouchableOpacity style={styles.btnAtt} onPress={() => handleForm(user)}>
+          <Text style={styles.btnAttTxt}>Vizualiar todos</Text>
+        </TouchableOpacity>
 
         <FlatList
           style={styles.list}
@@ -120,5 +128,15 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
     width: '100%'
-  }
+  },
+  btnAtt: {
+    // backgroundColor: '#428cfd',
+    backgroundColor: "#ddd",
+    width: "80%",
+    height: 40,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20
+  },
 });

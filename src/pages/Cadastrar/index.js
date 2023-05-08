@@ -34,6 +34,9 @@ export default function Cadastrar() {
     const [doctors, setDoctors] = useState([]);
     const [docSelected, setDocSelected] = useState([]);
     const navigation = useNavigation();
+    const [day, setDay] = useState('');
+    const [month, setMonth] = useState('');
+    const [year, setYear] = useState('');
 
 
 
@@ -105,16 +108,27 @@ export default function Cadastrar() {
             }
         } else {
             //cadastro de paciente
-            if (!name || !email || !senha || !phoneNumber || !nameM || !value || !sexo) {
+            if (!name || !email || !senha || !phoneNumber || !nameM || !year || !month || !day || !sexo || !docSelected) {
                 Alert.alert("Informe todos os campos.");
                 return;
             } else {
-                await signUpPaciente(email, senha, name, phoneNumber, nameM, value, sexo , docSelected);
+                await signUpPaciente(email, senha, name, phoneNumber, nameM, sexo, docSelected, year, month, day);
             }
 
         }
     }
 
+    const handleDayChange = (value) => {
+        setDay(value);
+    };
+
+    const handleMonthChange = (value) => {
+        setMonth(value);
+    };
+
+    const handleYearChange = (value) => {
+        setYear(value);
+    };
     useFocusEffect(
         useCallback(() => {
             let isActive = true;
@@ -156,7 +170,7 @@ export default function Cadastrar() {
                 </Text>
 
                 <RadioButton.Group onValueChange={setSelection} value={isSelected} >
-                    <View style={{ flexDirection: 'row' }}>
+                    <View style={{ flexDirection: 'row' , marginBottom: 5}}>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
                             <RadioButton
@@ -186,15 +200,39 @@ export default function Cadastrar() {
                             onChangeText={(text) => setName(text)}
                         />
 
-                        <TextInput
-                            theme={theme}
-                            label='Data de nascimento'
-                            mode='flat'
-                            textColor="#000"
-                            style={styles.imput}
-                            value={value}
-                            onChangeText={(text) => setValue(text)}
-                        />
+                        <Text style={{ color: 'white', width: '80%', marginVertical: 12 }}>Data de nascimento</Text>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', width: '80%', alignItems: 'center' }}>
+                            <TextInput
+                                theme={theme}
+                                mode='flat'
+                                style={{ ...styles.imputD, marginRight: 5 }}
+                                placeholder="Dia"
+                                value={day}
+                                onChangeText={handleDayChange}
+                                keyboardType="number-pad"
+                                maxLength={2}
+                            />
+                            <Text style={{ color: '#fff', fontSize: 30, marginRight: 5 }}>/</Text>
+                            <TextInput
+                                theme={theme}
+                                style={{ ...styles.imputD, marginRight: 5 }}
+                                placeholder="Mês"
+                                value={month}
+                                onChangeText={handleMonthChange}
+                                keyboardType="number-pad"
+                                maxLength={2}
+                            />
+                            <Text style={{ color: '#fff', fontSize: 30, marginRight: 5 }}>/</Text>
+                            <TextInput
+                                theme={theme}
+                                style={styles.imputD}
+                                placeholder="Ano"
+                                value={year}
+                                onChangeText={handleYearChange}
+                                keyboardType="number-pad"
+                                maxLength={4}
+                            />
+                        </View>
 
                         <TextInput
                             theme={theme}
@@ -428,5 +466,11 @@ const styles = StyleSheet.create({
         borderRadius: 2,
         marginTop: 12,
         width: '80%',
+    },
+    imputD: {
+        flex: 1,
+        backgroundColor: 'transparent',
+        borderColor: '#fff',
+        borderWidth: 1
     },
 });
