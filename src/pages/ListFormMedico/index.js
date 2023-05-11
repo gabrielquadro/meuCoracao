@@ -72,10 +72,10 @@ function ListFormMedico({ data }) {
         });
 
     return (
-        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data })}>
+        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data , medico: true})}>
             <Text>{name}</Text>
             <Text>{formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
-            <MaterialCommunityIcons name="text-box-check" size={40} color={data.userModificacao ? 'green' : 'red'} />
+            <MaterialCommunityIcons name="text-box-check" size={40} color={data.respondido ? 'green' : 'red'} />
         </TouchableOpacity>
     )
 }

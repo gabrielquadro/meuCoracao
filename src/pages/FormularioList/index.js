@@ -17,12 +17,15 @@ export default function FormularioList() {
 
 
     useEffect(() => {
+        console.log('aquiii')
         async function fetchPosts() {
             await db.collection('formulario')
                 .where('user', '==', user.uid)
                 .orderBy('created', 'desc')
                 .get()
                 .then((snapshoot) => {
+                    console.log('load')
+
                     setForms([]);
                     const formList = [];
                     snapshoot.docs.map(u => {
@@ -43,7 +46,30 @@ export default function FormularioList() {
 
     useFocusEffect(
         useCallback(() => {
-        console.log('aquiii')
+            console.log('aquii 222222')
+            async function fetchPosts() {
+                await db.collection('formulario')
+                    .where('user', '==', user.uid)
+                    .orderBy('created', 'desc')
+                    .get()
+                    .then((snapshoot) => {
+                        console.log('load  22222')
+
+                        setForms([]);
+                        const formList = [];
+                        snapshoot.docs.map(u => {
+                            formList.push({
+                                ...u.data(),
+                                id: u.id,
+                            })
+                        })
+
+                        setForms(formList);
+
+                    })
+            }
+            fetchPosts();
+
         }, [])
     );
 

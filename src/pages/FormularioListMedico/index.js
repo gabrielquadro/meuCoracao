@@ -19,22 +19,22 @@ export default function FormularioListMedico() {
     useEffect(() => {
         async function fetchPosts() {
             await db.collection('formulario')
-            .where('medico', '==', user.uid)
-            .orderBy('created', 'desc')
-            .get()
-            .then((snapshoot) => {
-              setForms([]);
-              const formList = [];
-              snapshoot.docs.map(u => {
-                formList.push({
-                  ...u.data(),
-                  id: u.id,
+                .where('medico', '==', user.uid)
+                .orderBy('created', 'desc')
+                .get()
+                .then((snapshoot) => {
+                    setForms([]);
+                    const formList = [];
+                    snapshoot.docs.map(u => {
+                        formList.push({
+                            ...u.data(),
+                            id: u.id,
+                        })
+                    })
+
+                    setForms(formList);
+
                 })
-              })
-  
-              setForms(formList);
-  
-            })
         }
         fetchPosts();
         console.log('entra')
@@ -43,7 +43,27 @@ export default function FormularioListMedico() {
 
     useFocusEffect(
         useCallback(() => {
-        console.log('aquiii')
+            async function fetchPosts() {
+                await db.collection('formulario')
+                    .where('medico', '==', user.uid)
+                    .orderBy('created', 'desc')
+                    .get()
+                    .then((snapshoot) => {
+                        setForms([]);
+                        const formList = [];
+                        snapshoot.docs.map(u => {
+                            formList.push({
+                                ...u.data(),
+                                id: u.id,
+                            })
+                        })
+
+                        setForms(formList);
+
+                    })
+            }
+            fetchPosts();
+            console.log('entra')
         }, [])
     );
 

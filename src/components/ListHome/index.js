@@ -63,11 +63,11 @@ function ListHome({ data }) {
   }
 
   return (
-    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data })}>
+    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data , medico: false})}>
       <Text>{formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
       {/* <MaterialIcons onPress={(value) => handleDelete(data)} name="delete" size={26} color="red" /> */}
       {/* <Fontisto name="doctor" size={30} color={data.userModificacao ? 'green' : 'red'} /> */}
-      <MaterialCommunityIcons name="doctor" size={40} color={data.userModificacao ? 'green' : 'red'} />
+      <MaterialCommunityIcons name="doctor" size={40} color={data.respondido ? 'green' : 'red'} />
     </TouchableOpacity>
   )
 }

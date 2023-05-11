@@ -5,11 +5,11 @@ import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native'
 import { auth, db } from '../../config'
 import { AuthContext } from '../../contexts/auth'
-import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
+import { Provider as PaperProvider, DefaultTheme, TextInput } from 'react-native-paper';
 
 
 export default function FormularioDetail({ route }) {
-    const { item } = route.params;
+    const { item , medico } = route.params;
     const [checked, setChecked] = useState('');
     const [checked2, setChecked2] = useState(item.opcao1 == 'S');
     const [checked3, setChecked3] = useState(item.opcao2 == 'S');
@@ -78,7 +78,9 @@ export default function FormularioDetail({ route }) {
             pergunta3: selectedLanguage ? selectedLanguage : 'opção1',
             userModificacao: user.uid,
             dataModificacao: new Date(),
-            medico: doc
+            medico: doc,
+            resposta: diag,
+            respondido: medico
         })
             .then(() => {
                 console.log('Atualiado')
@@ -90,20 +92,22 @@ export default function FormularioDetail({ route }) {
     }
 
     useEffect(() => {
-        if (item.userModificacao) {
+        console.log(item.respondido)
+        console.log('a')
+        if (item.respondido == true) {
             db.collection("users")
                 .doc(item.userModificacao)
                 .get()
                 .then((value) => {
                     setName(value.data().nome)
                     setIsDoc(value.data().isDoctor)
-                    if (value.data().diagnostico != null) {
-                        setDiag(value.data().diagnostico)
+                    if (item.resposta != null) {
+                        setDiag(item.resposta)
                     }
                     setDataTxt(item.dataModificacao)
                     if (item.medico) {
                         setDoc(item.medico)
-                    }else{
+                    } else {
                         setDoc(value.data().medico)
                     }
                 });
@@ -118,28 +122,29 @@ export default function FormularioDetail({ route }) {
                     setDoc(value.data().medico)
                 });
         }
+        console.log(user)
     }, []);
 
     return (
         <ScrollView style={styles.container} >
             <View style={styles.containerS}>
                 <Text>Ultima modificação feita por {name} em {formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
-                {diag ?
+                {medico || (diag && diag != '')  ?
                     <TextInput
                         theme={theme}
-                        label='Diagnostico'
+                        label='Resposta do médico'
                         mode='flat'
                         textColor="#000"
                         style={styles.imput}
                         value={diag}
                         onChangeText={(text) => setDiag(text)}
-                        editable={!isDoc}
+                        editable={medico}
                     />
                     :
                     <View></View>
                 }
 
-                <Text style={styles.question}>Pergunta 01?</Text>
+                <Text style={styles.question}>Pergunta 01111?</Text>
                 <RadioButton.Group onValueChange={setSelection} value={isSelected} >
                     <View style={{ flexDirection: 'row' }}>
 
