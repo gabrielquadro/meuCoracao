@@ -2,9 +2,9 @@
   "expo": {
     "name": "meuCoracao",
     "slug": "meuCoracao",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icone4.png",
+    "icon": "./assets/iconeQuadrado.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/iconeSplash.png",
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icone4.png",
+        "foregroundImage": "./assets/iconeQuadrado.png",
         "backgroundColor": "#FFFFFF"
       },
       "permissions": [
