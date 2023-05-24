@@ -9,12 +9,13 @@ import {
   Alert,
   ActivityIndicator,
   ScrollView,
-  Button
+  TouchableWithoutFeedback,
+  Keyboard
 } from "react-native";
-import { TextInput, RadioButton, DatePicker, Paragraph, Dialog, Portal, } from 'react-native-paper';
+import { TextInput, RadioButton} from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { AuthContext } from "../../contexts/auth";
-import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
+import { Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
 import { db, app, firebase } from '../../config'
 
 
@@ -46,6 +47,10 @@ export default function Login() {
     console.log(newDate)
     setDate(newDate);
     setVisible(false);
+  };
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
   };
 
 
@@ -141,6 +146,7 @@ export default function Login() {
 
   if (login) {
     return (
+      <TouchableWithoutFeedback onPress={dismissKeyboard}>
       <View style={styles.container}>
         <Text style={styles.title}>
           meu
@@ -154,6 +160,8 @@ export default function Login() {
           textColor="#000"
           style={styles.imput}
           value={email}
+          keyboardType="email-address"
+          autoCapitalize="none"
           onChangeText={(text) => setEmail(text)}
         />
 
@@ -186,6 +194,7 @@ export default function Login() {
           </Text>
         </TouchableOpacity>
       </View>
+      </TouchableWithoutFeedback>
     );
   }
 
@@ -451,8 +460,10 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: '#36393F',
+    // backgroundColor: "#a0a4a5",
     backgroundColor: "#a0a4a5",
+    //#CFD8DC - cinza mais claro
+    //#EF9A9A - vermelho bem claro
     justifyContent: "center",
     alignItems: "center",
   },

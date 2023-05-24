@@ -27,7 +27,8 @@ export default function AtualizarPerfilPaciente({ route }) {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
-  
+  const [cirurgia, setCirurgia] = useState('');
+
 
   const theme = {
     ...DefaultTheme,
@@ -71,6 +72,11 @@ export default function AtualizarPerfilPaciente({ route }) {
   const sexoList = [
     { label: "Masculino", value: "M" },
     { label: "Feminino", value: "F" },
+  ];
+
+  const tipoCirurgia = [
+    { label: "Tipo1", value: "t1" },
+    { label: "Tipo2", value: "t2" },
   ];
 
   const handleStateChange = (value) => {
@@ -134,6 +140,7 @@ export default function AtualizarPerfilPaciente({ route }) {
         setDay(value.data().diaNascimento)
         setMonth(value.data().mesNascimento)
         setYear(value.data().anoNascimento)
+        setCirurgia(value.data().cirurgia)
       });
   }, []);
 
@@ -152,7 +159,7 @@ export default function AtualizarPerfilPaciente({ route }) {
         infoAdd1: info,
         diaNascimento: day,
         mesNascimento: month,
-        anoNascimento : year
+        anoNascimento: year
       })
       .then(() => {
         console.log("Atualizou");
@@ -272,6 +279,26 @@ export default function AtualizarPerfilPaciente({ route }) {
         value={info}
         onChangeText={(text) => setInfo(text)}
       />
+
+      <Text style={{ marginTop: 10 }}>Cirugia</Text>
+      <View style={styles.picker}>
+        <Picker
+          style={{ color: "black" }}
+          dropdownIconColor={"black"}
+
+          selectedValue={cirurgia}
+          onValueChange={(value) => setCirurgia(value)}
+        >
+          <Picker.Item label="Selecione seu cirurgia" value="" />
+          {tipoCirurgia.map((state) => (
+            <Picker.Item
+              key={state.value}
+              label={state.label}
+              value={state.value}
+            />
+          ))}
+        </Picker>
+      </View>
 
       <TouchableOpacity style={styles.btn} onPress={updtade}>
         <Text style={styles.btnTxt}>Atualizar perfil</Text>

@@ -13,6 +13,7 @@ import { db, app, firebase } from "../../config";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Constants from 'expo-constants';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function ProfilePaciente() {
   const navigation = useNavigation();
@@ -130,7 +131,6 @@ export default function ProfilePaciente() {
   return (
     <View style={styles.container}>
       <Header />
-
       <TouchableOpacity style={styles.UploadButton} onPress={pickImage}>
         <Text style={styles.UploadButtonTxt}>+</Text>
         {urlI ? (
@@ -259,4 +259,11 @@ const styles = StyleSheet.create({
     right: "-10%",
     color: "#FFF",
   },
+  uploadEdit:{
+    position: "absolute",
+    zIndex: 99,
+    bottom: "-10%",
+    right: "-10%",
+    color: "#FFF",
+  }
 });

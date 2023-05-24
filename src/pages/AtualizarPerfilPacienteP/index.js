@@ -29,6 +29,7 @@ export default function AtualizarPerfilPaciente() {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
+  const [cirurgia, setCirurgia] = useState('');
 
   const theme = {
     ...DefaultTheme,
@@ -67,6 +68,11 @@ export default function AtualizarPerfilPaciente() {
     { label: "Sergipe", value: "SE" },
     { label: "São Paulo", value: "SP" },
     { label: "Tocantins", value: "TO" },
+  ];
+
+  const tipoCirurgia = [
+    { label: "Tipo1", value: "t1" },
+    { label: "Tipo2", value: "t2" },
   ];
 
   const sexoList = [
@@ -136,6 +142,7 @@ export default function AtualizarPerfilPaciente() {
         setDay(value.data().diaNascimento)
         setMonth(value.data().mesNascimento)
         setYear(value.data().anoNascimento)
+        setCirurgia(value.data().cirurgia)
       });
   }, []);
 
@@ -155,7 +162,8 @@ export default function AtualizarPerfilPaciente() {
         infoAdd1: info,
         diaNascimento: day,
         mesNascimento: month,
-        anoNascimento : year
+        anoNascimento: year,
+        cirurgia: cirurgia
       })
       .then(() => {
         console.log("Atualizou");
@@ -276,6 +284,26 @@ export default function AtualizarPerfilPaciente() {
         onChangeText={(text) => setInfo(text)}
       />
 
+      <Text style={{ marginTop: 10 }}>Cirugia</Text>
+      <View style={styles.picker}>
+        <Picker
+          style={{ color: "black" }}
+          dropdownIconColor={"black"}
+
+          selectedValue={cirurgia}
+          onValueChange={(value) => setCirurgia(value)}
+        >
+          <Picker.Item label="Selecione seu cirurgia" value="" />
+          {tipoCirurgia.map((state) => (
+            <Picker.Item
+              key={state.value}
+              label={state.label}
+              value={state.value}
+            />
+          ))}
+        </Picker>
+      </View>
+
       <TouchableOpacity style={styles.btn} onPress={updtade}>
         <Text style={styles.btnTxt}>Atualizar perfil</Text>
       </TouchableOpacity>
@@ -322,6 +350,7 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 40
   },
   btnTxt: {
     color: "#FFF",
