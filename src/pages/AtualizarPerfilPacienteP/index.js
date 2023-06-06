@@ -1,6 +1,13 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { TextInput, RadioButton } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { AuthContext } from "../../contexts/auth";
@@ -17,7 +24,7 @@ export default function AtualizarPerfilPaciente() {
     useContext(AuthContext);
   const [selectedState, setSelectedState] = useState("");
   const [sexo, setSexo] = useState("");
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
   const [created, setCreated] = useState("");
   const [isDoc, setIsDoc] = useState(false);
   const [doctors, setDoctors] = useState([]);
@@ -25,20 +32,21 @@ export default function AtualizarPerfilPaciente() {
   const navigation = useNavigation();
   const { signOut, user } = useContext(AuthContext);
   const [userP, setUserP] = useState({});
-  const [info, setInfo] = useState('');
-  const [day, setDay] = useState('');
-  const [month, setMonth] = useState('');
-  const [year, setYear] = useState('');
-  const [cirurgia, setCirurgia] = useState('');
+  const [info, setInfo] = useState("");
+  const [day, setDay] = useState("");
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  const [cirurgia, setCirurgia] = useState("");
   const [loading, setLoading] = useState(false);
-  const [diabetes, setDiabetes] = useState('');
-  const [hipertencao, setHipertencao] = useState('');
+  const [diabetes, setDiabetes] = useState("");
+  const [hipertencao, setHipertencao] = useState("");
+  const [outra, setOutra] = useState();
   const theme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      primary: 'black',
-      onSurfaceVariant: 'black',
+      primary: "black",
+      onSurfaceVariant: "black",
     },
   };
 
@@ -79,6 +87,7 @@ export default function AtualizarPerfilPaciente() {
     { label: "Reconstrução de aorta", value: "RA" },
     { label: "Implante de marcapasso", value: "IM" },
     { label: "Cirurgia estrutural(comunicação inreratrial", value: "CE" },
+    { label: "Outra", value: "O" },
   ];
 
   const sexoList = [
@@ -129,7 +138,7 @@ export default function AtualizarPerfilPaciente() {
   );
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     db.collection("users")
       .doc(user.uid)
       .get()
@@ -144,20 +153,23 @@ export default function AtualizarPerfilPaciente() {
         setDocSelected(value.data().medico);
         setCreated(value.data().createdAt);
         setIsDoc(value.data().isDoctor);
-        setDay(value.data().diaNascimento)
-        setMonth(value.data().mesNascimento)
-        setYear(value.data().anoNascimento)
-        setCirurgia(value.data().cirurgia)
-        setDiabetes(value.data().diabetes ? value.data().diabetes : '')
-        setHipertencao(value.data().hipertencao ? value.data().hipertencao : '')
-      }).finally(() => {
-        setLoading(false)
-
+        setDay(value.data().diaNascimento);
+        setMonth(value.data().mesNascimento);
+        setYear(value.data().anoNascimento);
+        setCirurgia(value.data().cirurgia);
+        setDiabetes(value.data().diabetes ? value.data().diabetes : "");
+        setHipertencao(
+          value.data().hipertencao ? value.data().hipertencao : ""
+        );
+        setOutra(value.data().outra)
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
   async function updtade() {
-    console.log(user.uid)
+    console.log(user.uid);
     db.collection("users")
       .doc(user.uid)
       .set({
@@ -174,7 +186,8 @@ export default function AtualizarPerfilPaciente() {
         anoNascimento: year,
         cirurgia: cirurgia,
         diabetes: diabetes,
-        hipertencao: hipertencao
+        hipertencao: hipertencao,
+        outra:outra
       })
       .then(() => {
         console.log("Atualizou");
@@ -188,12 +201,13 @@ export default function AtualizarPerfilPaciente() {
   return (
     <View style={{ flex: 1 }}>
       {loading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
           <ActivityIndicator SIZE={70} color="red"></ActivityIndicator>
         </View>
       ) : (
         <ScrollView style={styles.container}>
-
           <TextInput
             theme={theme}
             label="Nome"
@@ -203,12 +217,22 @@ export default function AtualizarPerfilPaciente() {
             value={name}
             onChangeText={(text) => setName(text)}
           />
-          <Text style={{ color: 'black', width: '80%', marginVertical: 12 }}>Data de nascimento</Text>
+          <Text style={{ color: "black", width: "80%", marginVertical: 12 }}>
+            Data de nascimento
+          </Text>
 
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+              alignItems: "center",
+            }}
+          >
             <TextInput
               theme={theme}
-              mode='flat'
+              mode="flat"
               style={{ ...styles.imputD, marginRight: 5 }}
               placeholder="Dia"
               value={day}
@@ -216,7 +240,9 @@ export default function AtualizarPerfilPaciente() {
               keyboardType="number-pad"
               maxLength={2}
             />
-            <Text style={{ color: 'black', fontSize: 30, marginRight: 5 }}>/</Text>
+            <Text style={{ color: "black", fontSize: 30, marginRight: 5 }}>
+              /
+            </Text>
             <TextInput
               theme={theme}
               style={{ ...styles.imputD, marginRight: 5 }}
@@ -226,7 +252,9 @@ export default function AtualizarPerfilPaciente() {
               keyboardType="number-pad"
               maxLength={2}
             />
-            <Text style={{ color: 'black', fontSize: 30, marginRight: 5 }}>/</Text>
+            <Text style={{ color: "black", fontSize: 30, marginRight: 5 }}>
+              /
+            </Text>
             <TextInput
               theme={theme}
               style={styles.imputD}
@@ -286,7 +314,11 @@ export default function AtualizarPerfilPaciente() {
             >
               <Picker.Item label="Selecione seu médico" value="" />
               {doctors.map((state) => (
-                <Picker.Item key={state.id} label={state.nome} value={state.id} />
+                <Picker.Item
+                  key={state.id}
+                  label={state.nome}
+                  value={state.id}
+                />
               ))}
             </Picker>
           </View>
@@ -296,7 +328,6 @@ export default function AtualizarPerfilPaciente() {
             <Picker
               style={{ color: "black" }}
               dropdownIconColor={"black"}
-
               selectedValue={cirurgia}
               onValueChange={(value) => setCirurgia(value)}
             >
@@ -311,57 +342,88 @@ export default function AtualizarPerfilPaciente() {
             </Picker>
           </View>
 
-          <Text style={{ marginTop: 10 }}>Possui diabetes?</Text>
-          <RadioButton.Group onValueChange={setDiabetes} value={diabetes} editable={false}>
-            <View style={{ flexDirection: 'row' }}>
+          {
+            cirurgia == "O" ? (
+              <TextInput
+                theme={theme}
+                label="Nome da cirurgia"
+                mode="flat"
+                textColor="#000"
+                style={styles.imput}
+                value={outra}
+                onChangeText={(text) => setOutra(text)}
+              />
+            ) : (
+              <View></View>
+            )
+          }
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                <RadioButton
-                  value="Sim"
-                  theme={theme}
-                />
-                <Text style={{ color: 'black' }}>Sim</Text>
+          <Text style={{ marginTop: 10 }}>Possui diabetes?</Text>
+          <RadioButton.Group
+            onValueChange={setDiabetes}
+            value={diabetes}
+            editable={false}
+          >
+            <View style={{ flexDirection: "row" }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 50,
+                }}
+              >
+                <RadioButton value="Sim" theme={theme} />
+                <Text style={{ color: "black" }}>Sim</Text>
               </View>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                <RadioButton
-                  value="Nao"
-                  theme={theme}
-                />
-                <Text style={{ color: 'black' }}>Não</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 50,
+                }}
+              >
+                <RadioButton value="Nao" theme={theme} />
+                <Text style={{ color: "black" }}>Não</Text>
               </View>
             </View>
           </RadioButton.Group>
 
           <Text style={{ marginTop: 10 }}>Possui hipertenção?</Text>
-          <RadioButton.Group onValueChange={setHipertencao} value={hipertencao} editable={false}>
-            <View style={{ flexDirection: 'row' }}>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 30 }}>
-                <RadioButton
-                  value="Sim"
-                  theme={theme}
-                />
-                <Text style={{ color: 'black' }}>Sim</Text>
+          <RadioButton.Group
+            onValueChange={setHipertencao}
+            value={hipertencao}
+            editable={false}
+          >
+            <View style={{ flexDirection: "row" }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 30,
+                }}
+              >
+                <RadioButton value="Sim" theme={theme} />
+                <Text style={{ color: "black" }}>Sim</Text>
               </View>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 30 }}>
-                <RadioButton
-                  value="Nao"
-                  theme={theme}
-                />
-                <Text style={{ color: 'black' }}>Não</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 30,
+                }}
+              >
+                <RadioButton value="Nao" theme={theme} />
+                <Text style={{ color: "black" }}>Não</Text>
               </View>
-
             </View>
           </RadioButton.Group>
-
 
           <TouchableOpacity style={styles.btn} onPress={updtade}>
             <Text style={styles.btnTxt}>Atualizar perfil</Text>
           </TouchableOpacity>
         </ScrollView>
-
       )}
     </View>
   );
@@ -372,16 +434,15 @@ const styles = StyleSheet.create({
     flex: 1,
     //backgroundColor: '#36393F',
     // backgroundColor: "#a0a4a5",
-    paddingHorizontal: '8%',
+    paddingHorizontal: "8%",
     //justifyContent: "center",
     // alignItems: "center",
   },
   imput: {
     marginTop: 12,
-    backgroundColor: 'transparent',
-    borderColor: '#000',
+    backgroundColor: "transparent",
+    borderColor: "#000",
     borderWidth: 1,
-
   },
   picker: {
     borderWidth: 1,
@@ -399,7 +460,7 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 40
+    marginBottom: 40,
   },
   btnTxt: {
     color: "#FFF",
@@ -407,8 +468,8 @@ const styles = StyleSheet.create({
   },
   imputD: {
     flex: 1,
-    backgroundColor: 'transparent',
-    borderColor: 'black',
-    borderWidth: 1
+    backgroundColor: "transparent",
+    borderColor: "black",
+    borderWidth: 1,
   },
 });

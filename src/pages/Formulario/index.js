@@ -122,6 +122,8 @@ export default function Formulario() {
         let resposta = '';
 
         //soma valores de dorAtiv
+        //1 - Quando o senhor (a) realiza uma atividade física leve (dar uma caminhada, fazer uma atividade 
+        //em casa ou ir ao supermercado), como se sente em relação: Cansaço:
         if (dorAtiv == 'Muito') {
             soma = soma + 3;
         } else if (dorAtiv == 'Moderadamente') {
@@ -133,6 +135,8 @@ export default function Formulario() {
         }
 
         //soma valores de dorAtivBC
+        //1 - Quando o senhor (a) realiza uma atividade física leve (dar uma caminhada, fazer uma atividade 
+        //em casa ou ir ao supermercado), como se sente em relação: Batimnto cadiaco:
         if (dorAtivBC == 'Muito') {
             soma = soma + 3;
         } else if (dorAtivBC == 'Moderadamente') {
@@ -144,6 +148,8 @@ export default function Formulario() {
         }
 
         //soma valores de dorAtivFA
+        //1 - Quando o senhor (a) realiza uma atividade física leve (dar uma caminhada, fazer uma atividade 
+        //em casa ou ir ao supermercado), como se sente em relação: falta de ar:
         if (dorAtivFA == 'Muito') {
             soma = soma + 3;
         } else if (dorAtivFA == 'Moderadamente') {
@@ -427,26 +433,26 @@ export default function Formulario() {
                 .then(() => {
                     console.log('Formulario criado')
 
-                    if (respostaGravDor == 'Gave') {
+                    if (respostaGravDor == 'Grave') {
                         setAlertDor('Sua dor no peito é classificada como grave. É importante procurar atendimento médico imediatamente para avaliação e tratamento adequados.')
                     } else if (respostaGravDor == 'Moderado') {
                         setAlertDor('Sua dor no peito está em um nível moderado. É recomendado buscar orientação médica para uma avaliação mais detalhada.')
                     } else if (respostaGravDor == 'Leve') {
                         setAlertDor('Sua dor no peito é considerada leve. Recomenda-se monitorar os sintomas e, se necessário, agendar uma consulta médica para um acompanhamento adequado.')
-                    } else {
+                    } else if (respostaGravDor == 'Tranquilo'){
                         setAlertDor('Sua dor no peito está em um nível tranquilo. No entanto, é sempre importante estar atento aos sinais de qualquer mudança e procurar assistência médica se necessário.')
                     }
 
-                    if (respostaGravInsuficiencia == 'Gave') {
+                    if (respostaGravInsuficiencia == 'Grave') {
                         setAlertInsufCard('Sua insuficiência cardíaca está em um estágio grave. É fundamental buscar atendimento médico especializado o mais rápido possível para um plano de tratamento apropriado.')
                     } else if (respostaGravInsuficiencia == 'Moderado') {
                         setAlertInsufCard('Sua insuficiência cardíaca é de intensidade moderada. É aconselhável agendar uma consulta com um cardiologista para uma avaliação mais detalhada e orientações sobre o tratamento.')
                     } else if (respostaGravInsuficiencia == 'Leve') {
                         setAlertInsufCard('Sua insuficiência cardíaca é leve. Recomenda-se seguir um estilo de vida saudável, tomar a medicação prescrita conforme orientação médica e comparecer às consultas de acompanhamento.')
-                    } else {
+                    } else  if (respostaGravInsuficiencia == 'Tranquilo'){
                         setAlertInsufCard('Sua insuficiência cardíaca está em um estado tranquilo. No entanto, é essencial adotar medidas de prevenção, como seguir uma dieta equilibrada, realizar exercícios físicos adequados e tomar a medicação conforme prescrição médica.')
                     }
-                    openModal2()
+                    openMModal2()
                     // navigation.goBack();
                 })
                 .catch((error) => {
