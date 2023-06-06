@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Fontisto, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { db, app, firebase } from "../../config";
@@ -10,6 +10,38 @@ function ListFormMedico({ data }) {
     const dataJson = JSON.parse(JSON.stringify(data?.created));
     const navigation = useNavigation();
     const [name, setName] = useState("");
+
+    const getColor = () => {
+        if (data.diagDorPeito && data.diagInsuficienciaCard) {
+            if (data.diagDorPeito == 'Grave' || data.diagInsuficienciaCard == 'Grave') {
+                return 'red';
+            } else if (data.diagDorPeito == 'Moderado' || data.diagInsuficienciaCard == 'Moderado') {
+                return 'orange'
+            } else if (data.diagDorPeito == 'Leve' || data.diagInsuficienciaCard == 'Leve') {
+                return 'yellow'
+            } else if (data.diagDorPeito == 'Tranquilo' || data.diagInsuficienciaCard == 'Tranquilo') {
+                return 'green'
+            }
+        } else {
+            return 'white'
+        }
+    };
+
+    const getGrav = () => {
+        if (data.diagDorPeito && data.diagInsuficienciaCard) {
+            if (data.diagDorPeito == 'Grave' || data.diagInsuficienciaCard == 'Grave') {
+                return 'Grave';
+            } else if (data.diagDorPeito == 'Moderado' || data.diagInsuficienciaCard == 'Moderado') {
+                return 'Moderado'
+            } else if (data.diagDorPeito == 'Leve' || data.diagInsuficienciaCard == 'Leve') {
+                return 'Leve'
+            } else if (data.diagDorPeito == 'Tranquilo' || data.diagInsuficienciaCard == 'Tranquilo') {
+                return 'Tranquilo'
+            }
+        } else {
+            return ''
+        }
+    };
 
 
     function formatarData(segundos, nanossegundos) {
@@ -64,6 +96,7 @@ function ListFormMedico({ data }) {
 
     }
 
+
     db.collection("users")
         .doc(data.user)
         .get()
@@ -72,7 +105,11 @@ function ListFormMedico({ data }) {
         });
 
     return (
-        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data , medico: true})}>
+        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data, medico: true })}>
+            <View >
+                <MaterialCommunityIcons name="circle" size={40} color={getColor()} />
+                <Text>{getGrav()}</Text>
+            </View>
             <Text>{name}</Text>
             <Text>{formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
             <MaterialCommunityIcons name="text-box-check" size={40} color={data.respondido ? 'green' : 'red'} />

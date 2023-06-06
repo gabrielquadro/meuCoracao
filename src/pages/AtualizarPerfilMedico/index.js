@@ -1,6 +1,6 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { TextInput } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { AuthContext } from "../../contexts/auth";
@@ -22,13 +22,15 @@ export default function AtualizarPerfilMedico() {
   const { signOut, user } = useContext(AuthContext);
   const [userP, setUserP] = useState({});
   const [crm, setCRM] = useState("");
+  const [loading, setLoading] = useState(false);
+
 
   const theme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      primary: "white",
-      onSurfaceVariant: "white",
+      primary: 'black',
+      onSurfaceVariant: 'black',
     },
   };
 
@@ -63,6 +65,7 @@ export default function AtualizarPerfilMedico() {
   ];
 
   useEffect(() => {
+    setLoading(true)
     db.collection("users")
       .doc(user.uid)
       .get()
@@ -74,6 +77,9 @@ export default function AtualizarPerfilMedico() {
         setCRM(value.data().crm)
         setCreated(value.data().createdAt);
         setIsDoc(value.data().isDoctor);
+      })
+      .finally(() => {
+        setLoading(false)
       });
   }, []);
 
@@ -84,7 +90,7 @@ export default function AtualizarPerfilMedico() {
         createdAt: created,
         isDoctor: isDoc,
         estado: selectedState,
-        crm : crm,
+        crm: crm,
         nome: name
       })
       .then(() => {
@@ -101,44 +107,51 @@ export default function AtualizarPerfilMedico() {
   }
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        theme={theme}
-        label='Nome completo'
-        mode='flat'
-        textColor="#000"
-        style={styles.imput}
-        value={name}
-        onChangeText={(text) => setName(text)}
-      />
-      <TextInput
-        theme={theme}
-        label='CRM'
-        mode='flat'
-        textColor="#000"
-        style={styles.imput}
-        value={crm}
-        onChangeText={(text) => setCRM(text)}
-      />
-      <View style={styles.picker}>
-        <Picker
-          style={{ color: 'white' }}
-          dropdownIconColor={'white'}
-          selectedValue={selectedState}
-          onValueChange={handleStateChange}>
-          <Picker.Item label="Selecione um estado" value="" />
-          {stateList.map((state) => (
-            <Picker.Item
-              key={state.value}
-              label={state.label}
-              value={state.value}
-            />
-          ))}
-        </Picker>
-      </View>
-      <TouchableOpacity style={styles.btn} onPress={updtade}>
-        <Text style={styles.btnTxt}>Atualizar perfil</Text>
-      </TouchableOpacity>
+    <View style={{flex:1}}>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator SIZE={70} color="red"></ActivityIndicator>
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <TextInput
+            theme={theme}
+            label='Nome completo'
+            mode='flat'
+            textColor="#000"
+            style={styles.imput}
+            value={name}
+            onChangeText={(text) => setName(text)}
+          />
+          <TextInput
+            theme={theme}
+            label='CRM'
+            mode='flat'
+            textColor="#000"
+            style={styles.imput}
+            value={crm}
+            onChangeText={(text) => setCRM(text)}
+          />
+          <View style={styles.picker}>
+            <Picker
+              dropdownIconColor={'white'}
+              selectedValue={selectedState}
+              onValueChange={handleStateChange}>
+              <Picker.Item label="Selecione um estado" value="" />
+              {stateList.map((state) => (
+                <Picker.Item
+                  key={state.value}
+                  label={state.label}
+                  value={state.value}
+                />
+              ))}
+            </Picker>
+          </View>
+          <TouchableOpacity style={styles.btn} onPress={updtade}>
+            <Text style={styles.btnTxt}>Atualizar perfil</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -147,8 +160,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     //backgroundColor: '#36393F',
-    backgroundColor: "#a0a4a5",
-    padding: '5%'
+    // backgroundColor: "#a0a4a5",
+    paddingHorizontal: '8%'
     //justifyContent: "center",
     // alignItems: "center",
   },
@@ -162,13 +175,13 @@ const styles = StyleSheet.create({
   imput: {
     width: "100%",
     marginTop: 12,
-    backgroundColor: "transparent",
-    borderColor: "#fff",
+    backgroundColor: 'transparent',
+    borderColor: '#000',
     borderWidth: 1,
   },
   picker: {
     borderWidth: 1,
-    borderColor: "white",
+    borderColor: "black",
     borderRadius: 2,
     marginTop: 12,
     width: "100%",
@@ -184,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   btnTxt: {
-    color: "#FFF",
+    color: "white",
     fontSize: 15,
   },
 });

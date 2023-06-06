@@ -9,13 +9,15 @@ import {
     Alert,
     ActivityIndicator,
     ScrollView,
-    Button
+    Modal
 } from "react-native";
 import { TextInput, RadioButton } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { AuthContext } from "../../contexts/auth";
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { db, app, firebase } from '../../config'
+import { StatusBar } from 'expo-status-bar';
+
 
 export default function Cadastrar() {
     const [login, setLogin] = useState(false);
@@ -37,8 +39,16 @@ export default function Cadastrar() {
     const [day, setDay] = useState('');
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
+    const [msgModal, setMsgModal] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
 
-
+    const openModal = () => {
+        setModalVisible(true);
+      };
+    
+      const closeModal = () => {
+        setModalVisible(false);
+      };
 
     const theme = {
         ...DefaultTheme,
@@ -100,8 +110,13 @@ export default function Cadastrar() {
         if (isSelected == 'M') {
             //case médico
             if (!name || !email || !senha || !crm || selectedState == '') {
-                Alert.alert("Informe todos os campos.");
+                setMsgModal("É necessário nformar todos os campos.")
+                setModalVisible(true)
+                // Alert.alert("Atenção", "Informe todos os campos.");
                 return;
+            }else if( senha.length < 7){
+                setMsgModal("Senha deve conter no mínimo 7 caracteres.")
+                setModalVisible(true)
             } else {
                 //cadastrar médico
                 await signUpMedico(email, senha, name, crm, selectedState);
@@ -109,7 +124,9 @@ export default function Cadastrar() {
         } else {
             //cadastro de paciente
             if (!name || !email || !senha || !phoneNumber || !nameM || !year || !month || !day || !sexo || !docSelected) {
-                Alert.alert("Informe todos os campos.");
+                // Alert.alert("Atenção", "Informe todos os campos.");
+                setMsgModal("É necessário nformar todos os campos.")
+                setModalVisible(true)
                 return;
             } else {
                 await signUpPaciente(email, senha, name, phoneNumber, nameM, sexo, docSelected, year, month, day);
@@ -159,6 +176,22 @@ export default function Cadastrar() {
     return (
         <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, backgroundColor: "#a0a4a5", }}>
             <View style={styles.container}>
+        <StatusBar style="light" backgroundColor="#a0a4a5"/>
+                
+            <Modal visible={modalVisible} transparent={true} animationType="fade" >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalText}>{msgModal}</Text>
+                {/* <Button title="Fechar" onPress={closeModal} /> */}
+                <TouchableOpacity onPress={closeModal} style={styles.btnModal}>
+                  <Text style={styles.btnTxt}>Fechar</Text>
+                </TouchableOpacity>
+
+              </View>
+            </View>
+          </Modal>
+                
+                
                 <Text style={styles.title}>
                     meu
                     <Text style={{ color: "#ff1933" }}>Coração</Text>
@@ -473,4 +506,32 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderWidth: 1
     },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      },
+      modalContent: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 16,
+        alignItems: 'center',
+        padding: 35
+      },
+      modalText: {
+        fontSize: 18,
+        marginBottom: 16,
+      },
+      btnModal: {
+        width:'80%',
+        backgroundColor: "#d04556",
+        //595458
+        borderRadius: 8,
+        marginTop: 15,
+        paddingVertical: 10,
+        paddingHorizontal: 80,
+        justifyContent: "center",
+        alignItems: "center",
+      },
 });

@@ -10,14 +10,15 @@ import {
   ActivityIndicator,
   ScrollView,
   TouchableWithoutFeedback,
-  Keyboard
+  Keyboard,
+  Modal,
 } from "react-native";
-import { TextInput, RadioButton} from 'react-native-paper';
+import { TextInput, RadioButton } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { AuthContext } from "../../contexts/auth";
-import { Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { db, app, firebase } from '../../config'
-
+import { StatusBar } from 'expo-status-bar';
 
 
 export default function Login() {
@@ -42,6 +43,16 @@ export default function Login() {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
+  const [msgModal, setMsgModal] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const handleDateChange = (newDate) => {
     console.log(newDate)
@@ -104,17 +115,20 @@ export default function Login() {
 
   async function handleSignIn() {
     if (!email || !senha) {
-      Alert.alert("Informe email e senha.");
+      setMsgModal("Informe email e senha.")
+      setModalVisible(true)
+      //Alert.alert("Atenção", "Informe email e senha.");
+      return;
+    } else {
+      await signIn(email, senha);
     }
-
-    await signIn(email, senha);
   }
 
   async function handSignUp() {
     if (isSelected == 'M') {
       //case médico
       if (!name || !email || !senha || !crm || selectedState == '') {
-        Alert.alert("Informe todos os campos.");
+        Alert.alert("Atenção", "Informe todos os campos.");
         return;
       } else {
         //cadastrar médico
@@ -123,7 +137,7 @@ export default function Login() {
     } else {
       //cadastro de paciente
       if (!name || !email || !senha || !phoneNumber || !nameM || !year || !month || !day || !sexo || !docSelected) {
-        Alert.alert("Informe todos os campos.");
+        Alert.alert("Atenção", "Informe todos os campos.");
         return;
       } else {
         await signUpPaciente(email, senha, name, phoneNumber, nameM, sexo, docSelected, year, month, day);
@@ -147,53 +161,70 @@ export default function Login() {
   if (login) {
     return (
       <TouchableWithoutFeedback onPress={dismissKeyboard}>
-      <View style={styles.container}>
-        <Text style={styles.title}>
-          meu
-          <Text style={{ color: "#ff1933" }}>Coração</Text>
-          <FontAwesome name="heartbeat" size={35} color="#ff1933" />
-        </Text>
-        <TextInput
-          theme={theme}
-          label='Email'
-          mode='flat'
-          textColor="#000"
-          style={styles.imput}
-          value={email}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          onChangeText={(text) => setEmail(text)}
-        />
+        <View style={styles.container}>
 
-        <TextInput
-          theme={theme}
-          label='Senha'
-          mode='flat'
-          textColor="#000"
-          style={styles.imput}
-          value={senha}
-          onChangeText={(text) => setSenha(text)}
-          secureTextEntry={hidePass}
-          right={<TextInput.Icon icon={({ color, size }) => (
-            <AntDesign name="eye" size={24} color="white" onPress={() => setHidePass(!hidePass)} />
-          )} />}
-        />
-        <TouchableOpacity onPress={handleSignIn} style={styles.btn}>
-          {loadingAuth ? (
-            <ActivityIndicator size={20} color="#FFF" />
-          ) : (
-            <Text style={styles.btnTxt}>Acessar</Text>
-          )}
-        </TouchableOpacity>
+        <StatusBar style="light" backgroundColor="#a0a4a5"/>
 
-        <TouchableOpacity style={styles.signUpBtn} onPress={() => navigation.navigate("Cadastrar")}>
-          <Text
-            // onPress={() => setLogin(!login)}
-            style={styles.signUpBtnTxt}>
-            Cadastrar
+          <Modal visible={modalVisible} transparent={true} animationType="fade" >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalText}>{msgModal}</Text>
+                {/* <Button title="Fechar" onPress={closeModal} /> */}
+                <TouchableOpacity onPress={closeModal} style={styles.btnModal}>
+                  <Text style={styles.btnTxt}>Fechar</Text>
+                </TouchableOpacity>
+
+              </View>
+            </View>
+          </Modal>
+
+
+          <Text style={styles.title}>
+            meu
+            <Text style={{ color: "#ff1933" }}>Coração</Text>
+            <FontAwesome name="heartbeat" size={35} color="#ff1933" />
           </Text>
-        </TouchableOpacity>
-      </View>
+          <TextInput
+            theme={theme}
+            label='Email'
+            mode='flat'
+            textColor="#000"
+            style={styles.imput}
+            value={email}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            onChangeText={(text) => setEmail(text)}
+          />
+
+          <TextInput
+            theme={theme}
+            label='Senha'
+            mode='flat'
+            textColor="#000"
+            style={styles.imput}
+            value={senha}
+            onChangeText={(text) => setSenha(text)}
+            secureTextEntry={hidePass}
+            right={<TextInput.Icon icon={({ color, size }) => (
+              <AntDesign name="eye" size={24} color="white" onPress={() => setHidePass(!hidePass)} />
+            )} />}
+          />
+          <TouchableOpacity onPress={handleSignIn} style={styles.btn}>
+            {loadingAuth ? (
+              <ActivityIndicator size={20} color="#FFF" />
+            ) : (
+              <Text style={styles.btnTxt}>Acessar</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.signUpBtn} onPress={() => navigation.navigate("Cadastrar")}>
+            <Text
+              // onPress={() => setLogin(!login)}
+              style={styles.signUpBtnTxt}>
+              Cadastrar
+            </Text>
+          </TouchableOpacity>
+        </View>
       </TouchableWithoutFeedback>
     );
   }
@@ -241,7 +272,7 @@ export default function Login() {
               value={name}
               onChangeText={(text) => setName(text)}
             />
-            <Text style={{ color: 'white' , width:'80%', marginBottom: 12}}>Data de nascimento</Text>
+            <Text style={{ color: 'white', width: '80%', marginBottom: 12 }}>Data de nascimento</Text>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', width: '80%', alignItems: 'center' }}>
               <TextInput
                 theme={theme}
@@ -527,5 +558,33 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginTop: 12,
     width: '80%',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    padding: 35
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 16,
+  },
+  btnModal: {
+    width:'80%',
+    backgroundColor: "#d04556",
+    //595458
+    borderRadius: 8,
+    marginTop: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 80,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

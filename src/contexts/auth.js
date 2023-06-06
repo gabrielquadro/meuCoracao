@@ -1,7 +1,17 @@
 import React, { useState, createContext, useEffect } from 'react'
 import { auth, db } from '../config'
-import { Alert } from 'react-native'
+// import { Alert, View } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Alert,
+    ActivityIndicator,
+    ScrollView,
+    Modal
+} from "react-native";
 
 
 export const AuthContext = createContext([]);
@@ -11,6 +21,17 @@ function AuthProvider({ children }) {
 
     const [loadingAuth, setLoadingAuth] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const [msgModal, setMsgModal] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const openModal = () => {
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+    };
 
 
     useEffect(() => {
@@ -50,6 +71,8 @@ function AuthProvider({ children }) {
                     })
             })
             .catch((error) => {
+                setMsgModal("Erro ao fazer um novo cadastro")
+                setModalVisible(true)
                 console.log(error);
                 setLoadingAuth(false);
 
@@ -83,6 +106,8 @@ function AuthProvider({ children }) {
                     })
             })
             .catch((error) => {
+                setMsgModal("Erro ao fazer um novo cadastro")
+                setModalVisible(true)
                 console.log(error);
                 setLoadingAuth(false);
 
@@ -128,6 +153,9 @@ function AuthProvider({ children }) {
                     })
             })
             .catch((error) => {
+                // Alert.alert("Atenção", "Erro ao fazer um novo cadastro!");
+                setMsgModal("Erro ao fazer um novo cadastro")
+                setModalVisible(true)
                 console.log(error);
                 setLoadingAuth(false);
 
@@ -154,7 +182,9 @@ function AuthProvider({ children }) {
 
             })
             .catch((error) => {
-                Alert.alert("Usuário ou senha incorreto!");
+                // Alert.alert("Atenção", "Usuário ou senha incorreto!");
+                setMsgModal("Usuário ou senha incorreto.")
+                setModalVisible(true)
                 console.log(error);
                 setLoadingAuth(false);
 
@@ -176,10 +206,128 @@ function AuthProvider({ children }) {
 
     return (
         <AuthContext.Provider value={{ signed: !!user, signUp, signIn, loadingAuth, loading, signOut, user, signUpMedico, signUpPaciente }}>
-            {children}
-        </AuthContext.Provider>
+
+            <Modal visible={modalVisible} transparent={true} animationType="fade" >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalText}>{msgModal}</Text>
+                        {/* <Button title="Fechar" onPress={closeModal} /> */}
+                        <TouchableOpacity onPress={closeModal} style={styles.btnModal}>
+                            <Text style={styles.btnTxt}>Fechar</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                </View>
+
+            </Modal>
+
+
+
+                {children}
+            </AuthContext.Provider>
+
+
+
+
     )
 
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        //backgroundColor: '#36393F',
+        backgroundColor: "#a0a4a5",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    title: {
+        color: "#FFF",
+        fontSize: 45,
+        fontWeight: "bold",
+        fontStyle: "italic",
+        marginBottom: 20,
+    },
+    imput: {
+        width: "80%",
+        marginTop: 12,
+        backgroundColor: 'transparent',
+        borderColor: '#fff',
+        borderWidth: 1,
+    },
+    btn: {
+        width: "80%",
+        backgroundColor: "#d04556",
+        //595458
+        borderRadius: 8,
+        marginTop: 15,
+        padding: 10,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    btnTxt: {
+        color: "#FFF",
+        fontSize: 15,
+    },
+    signUpBtn: {
+        width: "100%",
+        marginTop: 20,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    signUpBtnTxt: {
+        color: "#FFF",
+        fontSize: 15,
+    },
+    checkboxContainer: {
+        flexDirection: 'row',
+        marginTop: 12,
+        width: "80%",
+    },
+    checkbox: {
+        marginRight: 10,
+    },
+    picker: {
+        borderWidth: 1,
+        borderColor: 'white',
+        borderRadius: 2,
+        marginTop: 12,
+        width: '80%',
+    },
+    imputD: {
+        flex: 1,
+        backgroundColor: 'transparent',
+        borderColor: '#fff',
+        borderWidth: 1
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 16,
+        alignItems: 'center',
+        padding: 35
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 16,
+    },
+    btnModal: {
+        width: '80%',
+        backgroundColor: "#d04556",
+        //595458
+        borderRadius: 8,
+        marginTop: 15,
+        paddingVertical: 10,
+        paddingHorizontal: 80,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+});
 
 export default AuthProvider;

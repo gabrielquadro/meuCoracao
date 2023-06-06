@@ -1,7 +1,7 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { TextInput } from "react-native-paper";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import { TextInput , RadioButton } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { AuthContext } from "../../contexts/auth";
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
@@ -28,14 +28,16 @@ export default function AtualizarPerfilPaciente({ route }) {
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const [cirurgia, setCirurgia] = useState('');
-
+  const [loading, setLoading] = useState(false);
+  const [diabetes, setDiabetes] = useState('');
+  const [hipertencao, setHipertencao] = useState('');
 
   const theme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      primary: "white",
-      onSurfaceVariant: "white",
+      primary: 'black',
+      onSurfaceVariant: 'black',
     },
   };
 
@@ -75,8 +77,12 @@ export default function AtualizarPerfilPaciente({ route }) {
   ];
 
   const tipoCirurgia = [
-    { label: "Tipo1", value: "t1" },
-    { label: "Tipo2", value: "t2" },
+    { label: "Revascularização do miocardio", value: "RM" },
+    { label: "Troca valvar aortica", value: "TVA" },
+    { label: "Troca valvar mitral", value: "TVM" },
+    { label: "Reconstrução de aorta", value: "RA" },
+    { label: "Implante de marcapasso", value: "IM" },
+    { label: "Cirurgia estrutural(comunicação inreratrial", value: "CE" },
   ];
 
   const handleStateChange = (value) => {
@@ -122,6 +128,7 @@ export default function AtualizarPerfilPaciente({ route }) {
   );
 
   useEffect(() => {
+    setLoading(true)
     db.collection("users")
       .doc(user.id)
       .get()
@@ -141,6 +148,11 @@ export default function AtualizarPerfilPaciente({ route }) {
         setMonth(value.data().mesNascimento)
         setYear(value.data().anoNascimento)
         setCirurgia(value.data().cirurgia)
+        setDiabetes(value.data().diabetes ? value.data().diabetes : '')
+        setHipertencao(value.data().hipertencao ? value.data().hipertencao : '')
+
+      }).finally(() => {
+        setLoading(false)
       });
   }, []);
 
@@ -159,7 +171,10 @@ export default function AtualizarPerfilPaciente({ route }) {
         infoAdd1: info,
         diaNascimento: day,
         mesNascimento: month,
-        anoNascimento: year
+        anoNascimento: year,
+        cirurgia: cirurgia,
+        diabetes: diabetes,
+        hipertencao: hipertencao
       })
       .then(() => {
         console.log("Atualizou");
@@ -171,139 +186,187 @@ export default function AtualizarPerfilPaciente({ route }) {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <TextInput
-        theme={theme}
-        label="Nome"
-        mode="flat"
-        textColor="#000"
-        style={styles.imput}
-        value={name}
-        onChangeText={(text) => setName(text)}
-      />
-      <Text style={{ color: 'white', width: '80%', marginVertical: 12 }}>Data de nascimento</Text>
+    <View style={{flex:1}}>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator SIZE={70} color="red"></ActivityIndicator>
+        </View>
+      ) : (
+        <ScrollView style={styles.container}>
 
-      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-        <TextInput
-          theme={theme}
-          mode='flat'
-          style={{ ...styles.imputD, marginRight: 5 }}
-          placeholder="Dia"
-          value={day}
-          onChangeText={handleDayChange}
-          keyboardType="number-pad"
-          maxLength={2}
-        />
-        <Text style={{ color: '#fff', fontSize: 30, marginRight: 5 }}>/</Text>
-        <TextInput
-          theme={theme}
-          style={{ ...styles.imputD, marginRight: 5 }}
-          placeholder="Mês"
-          value={month}
-          onChangeText={handleMonthChange}
-          keyboardType="number-pad"
-          maxLength={2}
-        />
-        <Text style={{ color: '#fff', fontSize: 30, marginRight: 5 }}>/</Text>
-        <TextInput
-          theme={theme}
-          style={styles.imputD}
-          placeholder="Ano"
-          value={year}
-          onChangeText={handleYearChange}
-          keyboardType="number-pad"
-          maxLength={4}
-        />
-      </View>
+          <TextInput
+            theme={theme}
+            label="Nome"
+            mode="flat"
+            textColor="#000"
+            style={styles.imput}
+            value={name}
+            onChangeText={(text) => setName(text)}
+          />
+          <Text style={{ color: 'black', width: '80%', marginVertical: 12 }}>Data de nascimento</Text>
 
-      <TextInput
-        theme={theme}
-        label="Nome da mãe"
-        mode="flat"
-        textColor="#000"
-        style={styles.imput}
-        value={nameM}
-        onChangeText={(text) => setNameM(text)}
-      />
-
-      <TextInput
-        theme={theme}
-        label="Telefone"
-        mode="flat"
-        textColor="#000"
-        style={styles.imput}
-        value={phoneNumber}
-        keyboardType="phone-pad"
-        onChangeText={(text) => setPhoneNumber(text)}
-      />
-
-      <View style={styles.picker}>
-        <Picker
-          style={{ color: "black" }}
-          dropdownIconColor={"black"}
-          selectedValue={sexo}
-          onValueChange={(value) => setSexo(value)}
-        >
-          <Picker.Item label="Selecione seu sexo" value="" />
-          {sexoList.map((state) => (
-            <Picker.Item
-              key={state.value}
-              label={state.label}
-              value={state.value}
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <TextInput
+              theme={theme}
+              mode='flat'
+              style={{ ...styles.imputD, marginRight: 5 }}
+              placeholder="Dia"
+              value={day}
+              onChangeText={handleDayChange}
+              keyboardType="number-pad"
+              maxLength={2}
             />
-          ))}
-        </Picker>
-      </View>
-
-      <View style={styles.picker}>
-        <Picker
-          style={{ color: "black" }}
-          dropdownIconColor={"black"}
-          selectedValue={docSelected}
-          onValueChange={(value) => setDocSelected(value)}
-        >
-          <Picker.Item label="Selecione seu médico" value="" />
-          {doctors.map((state) => (
-            <Picker.Item key={state.id} label={state.nome} value={state.id} />
-          ))}
-        </Picker>
-      </View>
-
-      <Text style={{ marginTop: 10 }}>Informações específicas</Text>
-      <TextInput
-        theme={theme}
-        label="Informação especifica 1"
-        mode="flat"
-        textColor="#000"
-        style={styles.imput}
-        value={info}
-        onChangeText={(text) => setInfo(text)}
-      />
-
-      <Text style={{ marginTop: 10 }}>Cirugia</Text>
-      <View style={styles.picker}>
-        <Picker
-          style={{ color: "black" }}
-          dropdownIconColor={"black"}
-
-          selectedValue={cirurgia}
-          onValueChange={(value) => setCirurgia(value)}
-        >
-          <Picker.Item label="Selecione seu cirurgia" value="" />
-          {tipoCirurgia.map((state) => (
-            <Picker.Item
-              key={state.value}
-              label={state.label}
-              value={state.value}
+            <Text style={{ color: 'black', fontSize: 30, marginRight: 5 }}>/</Text>
+            <TextInput
+              theme={theme}
+              style={{ ...styles.imputD, marginRight: 5 }}
+              placeholder="Mês"
+              value={month}
+              onChangeText={handleMonthChange}
+              keyboardType="number-pad"
+              maxLength={2}
             />
-          ))}
-        </Picker>
-      </View>
+            <Text style={{ color: 'black', fontSize: 30, marginRight: 5 }}>/</Text>
+            <TextInput
+              theme={theme}
+              style={styles.imputD}
+              placeholder="Ano"
+              value={year}
+              onChangeText={handleYearChange}
+              keyboardType="number-pad"
+              maxLength={4}
+            />
+          </View>
 
-      <TouchableOpacity style={styles.btn} onPress={updtade}>
-        <Text style={styles.btnTxt}>Atualizar perfil</Text>
-      </TouchableOpacity>
-    </ScrollView>
+          <TextInput
+            theme={theme}
+            label="Nome da mãe"
+            mode="flat"
+            textColor="#000"
+            style={styles.imput}
+            value={nameM}
+            onChangeText={(text) => setNameM(text)}
+          />
+
+          <TextInput
+            theme={theme}
+            label="Telefone"
+            mode="flat"
+            textColor="#000"
+            style={styles.imput}
+            value={phoneNumber}
+            keyboardType="phone-pad"
+            onChangeText={(text) => setPhoneNumber(text)}
+          />
+
+          <View style={styles.picker}>
+            <Picker
+              style={{ color: "black" }}
+              dropdownIconColor={"black"}
+              selectedValue={sexo}
+              onValueChange={(value) => setSexo(value)}
+            >
+              <Picker.Item label="Selecione seu sexo" value="" />
+              {sexoList.map((state) => (
+                <Picker.Item
+                  key={state.value}
+                  label={state.label}
+                  value={state.value}
+                />
+              ))}
+            </Picker>
+          </View>
+
+          <View style={styles.picker}>
+            <Picker
+              style={{ color: "black" }}
+              dropdownIconColor={"black"}
+              selectedValue={docSelected}
+              onValueChange={(value) => setDocSelected(value)}
+            >
+              <Picker.Item label="Selecione seu médico" value="" />
+              {doctors.map((state) => (
+                <Picker.Item key={state.id} label={state.nome} value={state.id} />
+              ))}
+            </Picker>
+          </View>
+
+         
+
+          <Text style={{ marginTop: 10 }}>Cirugia</Text>
+          <View style={styles.picker}>
+            <Picker
+              style={{ color: "black" }}
+              dropdownIconColor={"black"}
+
+              selectedValue={cirurgia}
+              onValueChange={(value) => setCirurgia(value)}
+            >
+              <Picker.Item label="Selecione seu cirurgia" value="" />
+              {tipoCirurgia.map((state) => (
+                <Picker.Item
+                  key={state.value}
+                  label={state.label}
+                  value={state.value}
+                />
+              ))}
+            </Picker>
+          </View>
+
+          <Text style={{ marginTop: 10 }}>Possui diabetes?</Text>
+          <RadioButton.Group onValueChange={setDiabetes} value={diabetes} editable={false}>
+            <View style={{ flexDirection: 'row' }}>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                <RadioButton
+                  value="Sim"
+                  theme={theme}
+                />
+                <Text style={{ color: 'black' }}>Sim</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                <RadioButton
+                  value="Nao"
+                  theme={theme}
+                />
+                <Text style={{ color: 'black' }}>Não</Text>
+              </View>
+            </View>
+          </RadioButton.Group>
+
+          <Text style={{ marginTop: 10 }}>Possui hipertenção?</Text>
+          <RadioButton.Group onValueChange={setHipertencao} value={hipertencao} editable={false}>
+            <View style={{ flexDirection: 'row' }}>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 30 }}>
+                <RadioButton
+                  value="Sim"
+                  theme={theme}
+                />
+                <Text style={{ color: 'black' }}>Sim</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 30 }}>
+                <RadioButton
+                  value="Nao"
+                  theme={theme}
+                />
+                <Text style={{ color: 'black' }}>Não</Text>
+              </View>
+
+            </View>
+          </RadioButton.Group>
+
+          <TouchableOpacity style={styles.btn} onPress={updtade}>
+            <Text style={styles.btnTxt}>Atualizar perfil</Text>
+          </TouchableOpacity>
+        </ScrollView>
+
+      )}
+
+    </View>
+
   );
 }
 
@@ -311,8 +374,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     //backgroundColor: '#36393F',
-    backgroundColor: "#a0a4a5",
-    padding: '5%'
+    // backgroundColor: "#a0a4a5",
+    paddingHorizontal: '8%'
     //justifyContent: "center",
     // alignItems: "center",
   },
@@ -326,13 +389,13 @@ const styles = StyleSheet.create({
   imput: {
     width: "100%",
     marginTop: 12,
-    backgroundColor: "transparent",
-    borderColor: "#fff",
+    backgroundColor: 'transparent',
+    borderColor: '#000',
     borderWidth: 1,
   },
   picker: {
     borderWidth: 1,
-    borderColor: "white",
+    borderColor: "black",
     borderRadius: 2,
     marginTop: 12,
     width: "100%",
@@ -346,6 +409,7 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 40
   },
   btnTxt: {
     color: "#FFF",
@@ -354,7 +418,7 @@ const styles = StyleSheet.create({
   imputD: {
     flex: 1,
     backgroundColor: 'transparent',
-    borderColor: '#fff',
+    borderColor: 'black',
     borderWidth: 1
   },
 });

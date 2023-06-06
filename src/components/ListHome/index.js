@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Fontisto , MaterialIcons , MaterialCommunityIcons} from '@expo/vector-icons';
+import { Fontisto, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { db, app, firebase } from "../../config";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
@@ -9,6 +9,38 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 function ListHome({ data }) {
   const dataJson = JSON.parse(JSON.stringify(data?.created));
   const navigation = useNavigation();
+
+  const getColor = () => {
+    if (data.diagDorPeito && data.diagInsuficienciaCard) {
+      if (data.diagDorPeito == 'Grave' || data.diagInsuficienciaCard == 'Grave') {
+        return 'red';
+      } else if (data.diagDorPeito == 'Moderado' || data.diagInsuficienciaCard == 'Moderado') {
+        return 'orange'
+      } else if (data.diagDorPeito == 'Leve' || data.diagInsuficienciaCard == 'Leve') {
+        return 'yellow'
+      } else if (data.diagDorPeito == 'Tranquilo' || data.diagInsuficienciaCard == 'Tranquilo') {
+        return 'green'
+      }
+    } else {
+      return 'white'
+    }
+  };
+
+  const getGrav = () => {
+    if (data.diagDorPeito && data.diagInsuficienciaCard) {
+      if (data.diagDorPeito == 'Grave' || data.diagInsuficienciaCard == 'Grave') {
+        return 'Grave';
+      } else if (data.diagDorPeito == 'Moderado' || data.diagInsuficienciaCard == 'Moderado') {
+        return 'Moderado'
+      } else if (data.diagDorPeito == 'Leve' || data.diagInsuficienciaCard == 'Leve') {
+        return 'Leve'
+      } else if (data.diagDorPeito == 'Tranquilo' || data.diagInsuficienciaCard == 'Tranquilo') {
+        return 'Tranquilo'
+      }
+    } else {
+      return ''
+    }
+  };
 
   function formatarData(segundos, nanossegundos) {
     // Converter segundos e nanossegundos para milissegundos
@@ -60,10 +92,16 @@ function ListHome({ data }) {
       { cancelable: false }
     );
 
+
+
   }
 
   return (
-    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data , medico: false})}>
+    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('FormularioDetail', { item: data, medico: false })}>
+      <View >
+        <MaterialCommunityIcons name="circle" size={40} color={getColor()} />
+        <Text>{getGrav()}</Text>
+      </View>
       <Text>{formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
       {/* <MaterialIcons onPress={(value) => handleDelete(data)} name="delete" size={26} color="red" /> */}
       {/* <Fontisto name="doctor" size={30} color={data.userModificacao ? 'green' : 'red'} /> */}
@@ -83,7 +121,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     padding: 15,
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
 
 });

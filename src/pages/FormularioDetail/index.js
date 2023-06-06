@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { RadioButton, Checkbox } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native'
@@ -25,6 +25,11 @@ export default function FormularioDetail({ route }) {
     const [isDoc, setIsDoc] = useState(false);
     const [diag, setDiag] = useState('');
     const [doc, setDoc] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [diagDorPeito, setDiagDorPeito] = useState(item.diagDorPeito);
+    const [diagInsuficienciaCard, setDiagInsuficienciaCard] = useState(item.diagInsuficienciaCard);
+
+
 
 
     const [dignostico, setDiagnostico] = useState('');
@@ -105,8 +110,8 @@ export default function FormularioDetail({ route }) {
         ...DefaultTheme,
         colors: {
             ...DefaultTheme.colors,
-            primary: 'white',
-            onSurfaceVariant: 'white',
+            primary: 'black',
+            onSurfaceVariant: 'black',
         },
     };
 
@@ -130,25 +135,27 @@ export default function FormularioDetail({ route }) {
             dorAtiv: dorAtiv,
             dorAtivBC: dorAtivBC,
             dorAtivFA: dorAtivFA,
-            dorAtivDP:dorAtivDP,
-            cansacoR:cansacoR,
-            batimentoR:batimentoR,
-            faltaArR:faltaArR,
-            dorPeitoR:dorPeitoR,
-            tonturas:tonturas,
-            desmaio:desmaio,
-            dorPeito:dorPeito,
-            pressaoAlta:pressaoAlta,
-            suadoresFrios:suadoresFrios,
-            branco:branco,
-            vomitar:vomitar,
-            inchaco:inchaco,
-            outroL:outroL,
-            nivelDor:nivelDor,
-            dorAtivP:dorAtivP,
-            dorPeito200:dorPeito200,
-            dorPeito100:dorPeito100,
-            qualquerAtiv:qualquerAtiv
+            dorAtivDP: dorAtivDP,
+            cansacoR: cansacoR,
+            batimentoR: batimentoR,
+            faltaArR: faltaArR,
+            dorPeitoR: dorPeitoR,
+            tonturas: tonturas,
+            desmaio: desmaio,
+            dorPeito: dorPeito,
+            pressaoAlta: pressaoAlta,
+            suadoresFrios: suadoresFrios,
+            branco: branco,
+            vomitar: vomitar,
+            inchaco: inchaco,
+            outroL: outroL,
+            nivelDor: nivelDor,
+            dorAtivP: dorAtivP,
+            dorPeito200: dorPeito200,
+            dorPeito100: dorPeito100,
+            qualquerAtiv: qualquerAtiv,
+            diagDorPeito: diagDorPeito,
+            diagInsuficienciaCard: diagInsuficienciaCard
         })
             .then(() => {
                 console.log('Atualiado')
@@ -160,6 +167,7 @@ export default function FormularioDetail({ route }) {
     }
 
     useEffect(() => {
+        setLoading(true)
         console.log(item.respondido)
         console.log('a')
         if (item.respondido == true) {
@@ -178,6 +186,8 @@ export default function FormularioDetail({ route }) {
                     } else {
                         setDoc(value.data().medico)
                     }
+                }).finally(() => {
+                    setLoading(false)
                 });
         } else {
             db.collection("users")
@@ -188,31 +198,47 @@ export default function FormularioDetail({ route }) {
                     setIsDoc(value.data().isDoctor)
                     setDataTxt(item.created)
                     setDoc(value.data().medico)
+                }).finally(() => {
+                    setLoading(false)
                 });
         }
         console.log(user)
     }, []);
 
     return (
-        <ScrollView style={styles.container} >
-            <View style={styles.containerS}>
-                <Text>Ultima modificação feita por {name} em {formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
-                {medico || (diag && diag != '') ?
-                    <TextInput
-                        theme={theme}
-                        label='Resposta do médico'
-                        mode='flat'
-                        textColor="#000"
-                        style={styles.imput}
-                        value={diag}
-                        onChangeText={(text) => setDiag(text)}
-                        editable={medico}
-                    />
-                    :
-                    <View></View>
-                }
+        <View style={styles.container}>
 
-                {/* <Text style={styles.question}>Pergunta 01111?</Text>
+            {loading ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator SIZE={70} color="red"></ActivityIndicator>
+                </View>
+            ) : (
+                <ScrollView style={styles.container} >
+                    <View style={styles.containerS} >
+                        <Text style={{ marginTop: 10 , marginBottom: 10}}>Ultima modificação feita por {name} em {formatarData(dataJson.seconds, dataJson.nanoseconds)}</Text>
+                        <View style={{ padding: 10, borderWidth: 1, borderRadius: 4 }}>
+                            <Text style={{ marginTop: 10 }}>Insuficiência : {diagInsuficienciaCard}</Text>
+                            <Text style={{ marginTop: 10 }}>Dor no peito : {diagDorPeito}</Text>
+                        </View>
+                        <View>
+                            {medico || (diag && diag != '') ?
+                                <TextInput
+                                    theme={theme}
+                                    label={medico ? 'Resposta ao paciente' : 'Respota do médico'}
+                                    mode='flat'
+                                    textColor="#000"
+                                    style={styles.imput}
+                                    value={diag}
+                                    onChangeText={(text) => setDiag(text)}
+                                    editable={medico}
+                                />
+
+                                :
+                                <View></View>
+                            }
+                        </View>
+
+                        {/* <Text style={styles.question}>Pergunta 01111?</Text>
                 <RadioButton.Group onValueChange={setSelection} value={isSelected} >
                     <View style={{ flexDirection: 'row' }}>
 
@@ -266,784 +292,791 @@ export default function FormularioDetail({ route }) {
 
 
 
+                        <View pointerEvents="none">
+                            <Text style={styles.question}>1 - Quando o senhor (a) realiza uma atividade física leve (dar uma caminhada, fazer uma atividade em casa ou ir ao supermercado), como se sente em relação:</Text>
+                            <Text style={styles.question}>Cansaço:</Text>
+                            <RadioButton.Group onValueChange={setDorAtiv} value={dorAtiv} editable={false}>
+                                <View>
 
-                <Text style={styles.question}>1 - Quando o senhor (a) realiza uma atividade física leve (dar uma caminhada, fazer uma atividade em casa ou ir ao supermercado), como se sente em relação:</Text>
-                <Text style={styles.question}>Cansaço:</Text>
-                <RadioButton.Group onValueChange={setDorAtiv} value={dorAtiv} >
-                    <View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Muito"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Muito cansado</Text>
+                                    </View>
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Muito"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Muito cansado</Text>
-                        </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Moderadamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Moderadamente cansado</Text>
+                                    </View>
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Moderadamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Moderadamente cansado</Text>
-                        </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Pouco"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Pouco cansado</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nenhum"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nenhum cansaço </Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Pouco"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Pouco cansado</Text>
+                            <Text style={styles.question}>Batimento cardíaco:</Text>
+                            <RadioButton.Group onValueChange={setDorAtivBC} value={dorAtivBC} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Muito"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Muito aumentado</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Moderadamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Moderadamente aumentado</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Pouco"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Pouco aumentado</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nenhum"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nenhuma alteração </Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+
+                            <Text style={styles.question}>Falta de ar:</Text>
+                            <RadioButton.Group onValueChange={setDorAtivFA} value={dorAtivFA} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Muito"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Muita Muita falta de ar</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Moderadamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Moderadamente com falta de ar</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Pouco"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Pouca falta de ar</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nenhum"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nenhuma falta de ar </Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+                            <Text style={styles.question}>Dor no peito:</Text>
+                            <RadioButton.Group onValueChange={setDorAtivDP} value={dorAtivDP} >
+
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Muito"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Muita dor</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Moderadamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Dor moderada</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Pouco"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Pouca dor</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nenhum"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nenhuma dor</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+                            <Text style={styles.question}>2 - Quando está em repouso (sem esforço) apresenta:</Text>
+                            <Text style={styles.question}>Cansaço:</Text>
+                            <RadioButton.Group onValueChange={setCansacoR} value={cansacoR} >
+
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Muito"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Muito cansado</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Moderadamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Moderadamente cansado</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Pouco"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Pouco cansado</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nenhum"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nenhum cansaço </Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+                            <Text style={styles.question}>Batimento cardíaco:</Text>
+                            <RadioButton.Group onValueChange={setBatimentoR} value={batimentoR} >
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                    <RadioButton
+                                        value="Muito"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Muito aumentado</Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                    <RadioButton
+                                        value="Moderadamente"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Moderadamente aumentado</Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="Pouco"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Pouco aumentado</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="Nenhum"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Nenhuma alteração </Text>
+                                </View>
+                            </RadioButton.Group>
+
+
+                            <Text style={styles.question}>Falta de ar:</Text>
+                            <RadioButton.Group onValueChange={setFaltaArR} value={faltaArR} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Muito"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Muita Muita falta de ar</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Moderadamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Moderadamente com falta de ar</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Pouco"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Pouca falta de ar</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nenhum"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nenhuma falta de ar </Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+                            <Text style={styles.question}>Dor no peito:</Text>
+                            <RadioButton.Group onValueChange={setDorPeitoR} value={dorPeitoR} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Muito"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Muita dor</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Moderadamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Dor moderada</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Pouco"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Pouca dor</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nenhum"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nenhuma dor</Text>
+                                    </View>
+
+                                </View>
+                            </RadioButton.Group>
+
+
+                            <Text style={styles.question}>3 - Em relação as tonturas:</Text>
+                            <RadioButton.Group onValueChange={setTonturas} value={tonturas} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Diariamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Diariamente</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="QuatroaSeis"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="UmaTres"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nunca"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+
+
+                            <Text style={styles.question}>4 - Em relação ao desmaio:</Text>
+                            <RadioButton.Group onValueChange={setDesmaio} value={desmaio} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Diariamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Diariamente</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="QuatroaSeis"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="UmaTres"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nunca"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+
+                            <Text style={styles.question}>5 - Em relação a dor no peito:</Text>
+                            <RadioButton.Group onValueChange={setDorPeito} value={dorPeito} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Diariamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Diariamente</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="QuatroaSeis"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="UmaTres"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nunca"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+
+
+                            <Text style={styles.question}>6 - Em relação a pressão alta:</Text>
+                            <RadioButton.Group onValueChange={setPressaoAlta} value={pressaoAlta} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Diariamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Diariamente</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="QuatroaSeis"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="UmaTres"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nunca"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+                            <Text style={styles.question}>7 - Apresenta suadores frios:</Text>
+                            <RadioButton.Group onValueChange={setSuadoresFrios} value={suadoresFrios} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Diariamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Diariamente</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="QuatroaSeis"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="UmaTres"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nunca"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+
+
+                            <Text style={styles.question}>8 - Apresenta pele do rosto e os lábios da boca brancos:</Text>
+                            <RadioButton.Group onValueChange={setBranco} value={branco} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Diariamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Diariamente</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="QuatroaSeis"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="UmaTres"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nunca"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+
+                            <Text style={styles.question}>9 - Apresenta vontade de vomitar:</Text>
+                            <RadioButton.Group onValueChange={setVomitar} value={vomitar} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Diariamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Diariamente</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="QuatroaSeis"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="UmaTres"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nunca"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+
+                            <Text style={styles.question}>10 - Apresenta inchaço nas pernas, tornozelos e pés:</Text>
+                            <RadioButton.Group onValueChange={setInchaco} value={inchaco} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="Diariamente"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Diariamente</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="QuatroaSeis"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="UmaTres"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="Nunca"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+
+                            <Text style={styles.question}>11 - 11.	A dor no peito também aparece em algum outro lugar no corpo como: braço esquerdo, mandíbula, estômago, costas ou pescoço:</Text>
+                            <RadioButton.Group onValueChange={setOutroL} value={outroL} >
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                    <RadioButton
+                                        value="Diariamente"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Diariamente</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="QuatroaSeis"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="UmaTres"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="Nunca"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                </View>
+
+                            </RadioButton.Group>
+
+
+
+
+
+                            <Text style={styles.question}>12 - Em uma escala de 1 a 10, sendo 10 a pior dor, como você classifica a sua dor?</Text>
+                            <RadioButton.Group onValueChange={setNivelDor} value={nivelDor} >
+                                <View>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                        <RadioButton
+                                            value="UmaTres"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>1 até 3</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="TresaCinco"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>3 até 5</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="CincoaSete"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>5 até 7</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="SeteaOito"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>7 até 8</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <RadioButton value="NoveaDez"
+                                            theme={theme}
+                                        />
+                                        <Text style={{ color: 'black' }}>9 até 10</Text>
+                                    </View>
+                                </View>
+                            </RadioButton.Group>
+
+
+
+                            <Text style={styles.question}>13 - Você tem dor no peito após atividades intensas prolongadas:</Text>
+                            <RadioButton.Group onValueChange={setDorAtivP} value={dorAtivP} >
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                    <RadioButton
+                                        value="Diariamente"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Diariamente</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="QuatroaSeis"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="UmaTres"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="Nunca"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                </View>
+
+                            </RadioButton.Group>
+
+
+
+
+                            <Text style={styles.question}>14 - Você tem dor no peito após caminhar 200 m ou subir dois lances de escada:</Text>
+                            <RadioButton.Group onValueChange={setDorPeito200} value={dorPeito200} >
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                    <RadioButton
+                                        value="Diariamente"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Diariamente</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="QuatroaSeis"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="UmaTres"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="Nunca"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                </View>
+
+                            </RadioButton.Group>
+
+
+                            <Text style={styles.question}>15 - Você tem dor no peito após caminhar 100 m ou subir um lance de escada:</Text>
+                            <RadioButton.Group onValueChange={setDorPeito100} value={dorPeito100} >
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                    <RadioButton
+                                        value="Diariamente"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Diariamente</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="QuatroaSeis"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="UmaTres"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="Nunca"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                </View>
+
+                            </RadioButton.Group>
+
+
+                            <Text style={styles.question}>16 - Você tem dor no peito após realizar qualquer atividade:</Text>
+                            <RadioButton.Group onValueChange={setQualquerAtiv} value={qualquerAtiv} >
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
+                                    <RadioButton
+                                        value="Diariamente"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Diariamente</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="QuatroaSeis"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="UmaTres"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton value="Nunca"
+                                        theme={theme}
+                                    />
+                                    <Text style={{ color: 'black' }}>Nunca apresento</Text>
+                                </View>
+
+                            </RadioButton.Group>
+
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nenhum"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nenhum cansaço </Text>
-                        </View>
+                        {medico ?
+                            <TouchableOpacity onPress={handleSave} style={styles.btnSalvar}>
+                                <Text style={styles.btnSalvarTxt}>Alterar</Text>
+                            </TouchableOpacity>
+                            :
+                            <View></View>
+                        }
                     </View>
-                </RadioButton.Group>
+                </ScrollView>
+            )}
 
-                <Text style={styles.question}>Batimento cardíaco:</Text>
-                <RadioButton.Group onValueChange={setDorAtivBC} value={dorAtivBC} >
-                    <View>
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Muito"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Muito aumentado</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Moderadamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Moderadamente aumentado</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Pouco"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Pouco aumentado</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nenhum"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nenhuma alteração </Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-
-                <Text style={styles.question}>Falta de ar:</Text>
-                <RadioButton.Group onValueChange={setDorAtivFA} value={dorAtivFA} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Muito"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Muita Muita falta de ar</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Moderadamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Moderadamente com falta de ar</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Pouco"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Pouca falta de ar</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nenhum"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nenhuma falta de ar </Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-                <Text style={styles.question}>Dor no peito:</Text>
-                <RadioButton.Group onValueChange={setDorAtivDP} value={dorAtivDP} >
-
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Muito"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Muita dor</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Moderadamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Dor moderada</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Pouco"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Pouca dor</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nenhum"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nenhuma dor</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-                <Text style={styles.question}>2 - Quando está em repouso (sem esforço) apresenta:</Text>
-                <Text style={styles.question}>Cansaço:</Text>
-                <RadioButton.Group onValueChange={setCansacoR} value={cansacoR} >
-
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Muito"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Muito cansado</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Moderadamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Moderadamente cansado</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Pouco"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Pouco cansado</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nenhum"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nenhum cansaço </Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-                <Text style={styles.question}>Batimento cardíaco:</Text>
-                <RadioButton.Group onValueChange={setBatimentoR} value={batimentoR} >
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                        <RadioButton
-                            value="Muito"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Muito aumentado</Text>
-                    </View>
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                        <RadioButton
-                            value="Moderadamente"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Moderadamente aumentado</Text>
-                    </View>
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="Pouco"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Pouco aumentado</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="Nenhum"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Nenhuma alteração </Text>
-                    </View>
-                </RadioButton.Group>
-
-
-                <Text style={styles.question}>Falta de ar:</Text>
-                <RadioButton.Group onValueChange={setFaltaArR} value={faltaArR} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Muito"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Muita Muita falta de ar</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Moderadamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Moderadamente com falta de ar</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Pouco"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Pouca falta de ar</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nenhum"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nenhuma falta de ar </Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-                <Text style={styles.question}>Dor no peito:</Text>
-                <RadioButton.Group onValueChange={setDorPeitoR} value={dorPeitoR} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Muito"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Muita dor</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Moderadamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Dor moderada</Text>
-                        </View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Pouco"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Pouca dor</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nenhum"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nenhuma dor</Text>
-                        </View>
-
-                    </View>
-                </RadioButton.Group>
-
-
-                <Text style={styles.question}>3 - Em relação as tonturas:</Text>
-                <RadioButton.Group onValueChange={setTonturas} value={tonturas} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Diariamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Diariamente</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="QuatroaSeis"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="UmaTres"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nunca"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-
-
-                <Text style={styles.question}>4 - Em relação ao desmaio:</Text>
-                <RadioButton.Group onValueChange={setDesmaio} value={desmaio} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Diariamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Diariamente</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="QuatroaSeis"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="UmaTres"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nunca"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-
-                <Text style={styles.question}>5 - Em relação a dor no peito:</Text>
-                <RadioButton.Group onValueChange={setDorPeito} value={dorPeito} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Diariamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Diariamente</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="QuatroaSeis"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="UmaTres"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nunca"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-
-
-                <Text style={styles.question}>6 - Em relação a pressão alta:</Text>
-                <RadioButton.Group onValueChange={setPressaoAlta} value={pressaoAlta} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Diariamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Diariamente</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="QuatroaSeis"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="UmaTres"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nunca"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-                <Text style={styles.question}>7 - Apresenta suadores frios:</Text>
-                <RadioButton.Group onValueChange={setSuadoresFrios} value={suadoresFrios} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Diariamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Diariamente</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="QuatroaSeis"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="UmaTres"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nunca"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-
-
-                <Text style={styles.question}>8 - Apresenta pele do rosto e os lábios da boca brancos:</Text>
-                <RadioButton.Group onValueChange={setBranco} value={branco} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Diariamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Diariamente</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="QuatroaSeis"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="UmaTres"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nunca"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-
-                <Text style={styles.question}>9 - Apresenta vontade de vomitar:</Text>
-                <RadioButton.Group onValueChange={setVomitar} value={vomitar} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Diariamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Diariamente</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="QuatroaSeis"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="UmaTres"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nunca"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-
-                <Text style={styles.question}>10 - Apresenta inchaço nas pernas, tornozelos e pés:</Text>
-                <RadioButton.Group onValueChange={setInchaco} value={inchaco} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="Diariamente"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Diariamente</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="QuatroaSeis"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="UmaTres"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="Nunca"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-
-                <Text style={styles.question}>11 - 11.	A dor no peito também aparece em algum outro lugar no corpo como: braço esquerdo, mandíbula, estômago, costas ou pescoço:</Text>
-                <RadioButton.Group onValueChange={setOutroL} value={outroL} >
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                        <RadioButton
-                            value="Diariamente"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Diariamente</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="QuatroaSeis"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="UmaTres"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="Nunca"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                    </View>
-
-                </RadioButton.Group>
-
-
-
-
-
-                <Text style={styles.question}>12 - Em uma escala de 1 a 10, sendo 10 a pior dor, como você classifica a sua dor?</Text>
-                <RadioButton.Group onValueChange={setNivelDor} value={nivelDor} >
-                    <View>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                            <RadioButton
-                                value="UmaTres"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>1 até 3</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="TresaCinco"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>3 até 5</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="CincoaSete"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>5 até 7</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="SeteaOito"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>7 até 8</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <RadioButton value="NoveaDez"
-                                theme={theme}
-                            />
-                            <Text style={{ color: 'black' }}>9 até 10</Text>
-                        </View>
-                    </View>
-                </RadioButton.Group>
-
-
-
-                <Text style={styles.question}>13 - Você tem dor no peito após atividades intensas prolongadas:</Text>
-                <RadioButton.Group onValueChange={setDorAtivP} value={dorAtivP} >
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                        <RadioButton
-                            value="Diariamente"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Diariamente</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="QuatroaSeis"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="UmaTres"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="Nunca"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                    </View>
-
-                </RadioButton.Group>
-
-
-
-
-                <Text style={styles.question}>14 - Você tem dor no peito após caminhar 200 m ou subir dois lances de escada:</Text>
-                <RadioButton.Group onValueChange={setDorPeito200} value={dorPeito200} >
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                        <RadioButton
-                            value="Diariamente"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Diariamente</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="QuatroaSeis"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="UmaTres"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="Nunca"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                    </View>
-
-                </RadioButton.Group>
-
-
-                <Text style={styles.question}>15 - Você tem dor no peito após caminhar 100 m ou subir um lance de escada:</Text>
-                <RadioButton.Group onValueChange={setDorPeito100} value={dorPeito100} >
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                        <RadioButton
-                            value="Diariamente"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Diariamente</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="QuatroaSeis"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="UmaTres"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="Nunca"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                    </View>
-
-                </RadioButton.Group>
-
-
-                <Text style={styles.question}>16 - Você tem dor no peito após realizar qualquer atividade:</Text>
-                <RadioButton.Group onValueChange={setQualquerAtiv} value={qualquerAtiv} >
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
-                        <RadioButton
-                            value="Diariamente"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Diariamente</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="QuatroaSeis"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>4 a 6 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="UmaTres"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>1 a 3 vezes na semana</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <RadioButton value="Nunca"
-                            theme={theme}
-                        />
-                        <Text style={{ color: 'black' }}>Nunca apresento</Text>
-                    </View>
-
-                </RadioButton.Group>
-
-
-
-                <TouchableOpacity onPress={handleSave} style={styles.btnSalvar}>
-                    <Text style={styles.btnSalvarTxt}>Alterar</Text>
-                </TouchableOpacity>
-
-            </View>
-
-        </ScrollView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#a0a4a5"
+        // backgroundColor: "#a0a4a5"
+        backgroundColor: 'white'
     },
     question: {
-        fontSize: 20,
+        fontSize: 16,
         marginTop: 15,
-        marginBottom: 5
+        marginBottom: 5,
+        textAlign: 'justify',
     },
     radioTxt: {
         fontSize: 18
@@ -1055,7 +1088,8 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 4,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginBottom: 30
     },
     btnSalvarTxt: {
         fontSize: 18,
@@ -1063,14 +1097,14 @@ const styles = StyleSheet.create({
     },
     containerS: {
         flex: 1,
-        padding: '5%',
-        backgroundColor: "#a0a4a5",
+        paddingHorizontal: 15,
+        // backgroundColor: "#a0a4a5",
+        backgroundColor: 'white'
     },
     imput: {
-        width: "100%",
         marginTop: 12,
-        backgroundColor: "transparent",
-        borderColor: "#fff",
+        backgroundColor: 'transparent',
+        borderColor: '#000',
         borderWidth: 1,
     },
 });

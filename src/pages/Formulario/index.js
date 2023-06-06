@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal } from "react-native";
 import { RadioButton, Checkbox } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native'
@@ -24,7 +24,6 @@ export default function Formulario() {
 
 
     const [dorAtiv, setDorAtiv] = useState('');
-    const [dorAtivValue, setDorAtivValue] = useState(0);
 
     const [dorAtivBC, setDorAtivBC] = useState('');
 
@@ -68,10 +67,30 @@ export default function Formulario() {
 
     const [qualquerAtiv, setQualquerAtiv] = useState('');
 
+    const [alertDor, setAlertDor] = useState('');
 
+    const [alertInsufCard, setAlertInsufCard] = useState('');
 
+    const [msgModal, setMsgModal] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisible2, setModalVisible2] = useState(false);
 
+    const openModal = () => {
+        setModalVisible(true);
+    };
 
+    const closeModal = () => {
+        setModalVisible(false);
+    };
+
+    const openModal2 = () => {
+        setModalVisible2(true);
+    };
+
+    const closeModal2 = () => {
+        setModalVisible2(false);
+        navigation.goBack();
+    };
 
     const theme = {
         ...DefaultTheme,
@@ -98,41 +117,347 @@ export default function Formulario() {
             });
     }, []);
 
+    function getGravInsuficiencia() {
+        let soma = 0;
+        let resposta = '';
+
+        //soma valores de dorAtiv
+        if (dorAtiv == 'Muito') {
+            soma = soma + 3;
+        } else if (dorAtiv == 'Moderadamente') {
+            soma = soma + 2;
+        } else if (dorAtiv == 'Pouco') {
+            soma = soma + 1;
+        } else if (dorAtiv == 'Nenhum') {
+            soma = soma + 0;
+        }
+
+        //soma valores de dorAtivBC
+        if (dorAtivBC == 'Muito') {
+            soma = soma + 3;
+        } else if (dorAtivBC == 'Moderadamente') {
+            soma = soma + 2;
+        } else if (dorAtivBC == 'Pouco') {
+            soma = soma + 1;
+        } else if (dorAtivBC == 'Nenhum') {
+            soma = soma + 0;
+        }
+
+        //soma valores de dorAtivFA
+        if (dorAtivFA == 'Muito') {
+            soma = soma + 3;
+        } else if (dorAtivFA == 'Moderadamente') {
+            soma = soma + 2;
+        } else if (dorAtivFA == 'Pouco') {
+            soma = soma + 1;
+        } else if (dorAtivFA == 'Nenhum') {
+            soma = soma + 0;
+        }
+
+        //soma valores de cansacoR
+        if (cansacoR == 'Muito') {
+            soma = soma + 3;
+        } else if (cansacoR == 'Moderadamente') {
+            soma = soma + 2;
+        } else if (cansacoR == 'Pouco') {
+            soma = soma + 1;
+        } else if (cansacoR == 'Nenhum') {
+            soma = soma + 0;
+        }
+
+        //soma valores de batimentoR
+        if (batimentoR == 'Muito') {
+            soma = soma + 3;
+        } else if (batimentoR == 'Moderadamente') {
+            soma = soma + 2;
+        } else if (batimentoR == 'Pouco') {
+            soma = soma + 1;
+        } else if (batimentoR == 'Nenhum') {
+            soma = soma + 0;
+        }
+
+        //soma valores de faltaArR
+        if (faltaArR == 'Muito') {
+            soma = soma + 3;
+        } else if (faltaArR == 'Moderadamente') {
+            soma = soma + 2;
+        } else if (faltaArR == 'Pouco') {
+            soma = soma + 1;
+        } else if (faltaArR == 'Nenhum') {
+            soma = soma + 0;
+        }
+
+        //soma valores de tonturas
+        if (tonturas == 'Diariamente') {
+            soma = soma + 3;
+        } else if (tonturas == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (tonturas == 'UmaTres') {
+            soma = soma + 1;
+        } else if (tonturas == 'Nunca') {
+            soma = soma + 0;
+        }
+
+        //soma valores de desmaio
+        if (desmaio == 'Diariamente') {
+            soma = soma + 3;
+        } else if (desmaio == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (desmaio == 'UmaTres') {
+            soma = soma + 1;
+        } else if (desmaio == 'Nunca') {
+            soma = soma + 0;
+        }
+
+
+        //soma valores de pressaoAlta
+        if (pressaoAlta == 'Diariamente') {
+            soma = soma + 3;
+        } else if (pressaoAlta == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (pressaoAlta == 'UmaTres') {
+            soma = soma + 1;
+        } else if (pressaoAlta == 'Nunca') {
+            soma = soma + 0;
+        }
+
+        //soma valores de suadoresFrios
+        if (suadoresFrios == 'Diariamente') {
+            soma = soma + 3;
+        } else if (suadoresFrios == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (suadoresFrios == 'UmaTres') {
+            soma = soma + 1;
+        } else if (suadoresFrios == 'Nunca') {
+            soma = soma + 0;
+        }
+
+        //soma valores de branco
+        if (branco == 'Diariamente') {
+            soma = soma + 3;
+        } else if (branco == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (branco == 'UmaTres') {
+            soma = soma + 1;
+        } else if (branco == 'Nunca') {
+            soma = soma + 0;
+        }
+
+        //soma valores de vomitar
+        if (vomitar == 'Diariamente') {
+            soma = soma + 3;
+        } else if (vomitar == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (vomitar == 'UmaTres') {
+            soma = soma + 1;
+        } else if (vomitar == 'Nunca') {
+            soma = soma + 0;
+        }
+
+        //soma valores de inchaco
+        if (inchaco == 'Diariamente') {
+            soma = soma + 3;
+        } else if (inchaco == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (inchaco == 'UmaTres') {
+            soma = soma + 1;
+        } else if (inchaco == 'Nunca') {
+            soma = soma + 0;
+        }
+
+        if (soma >= 0 && soma <= 10) {
+            resposta = 'Tranquilo'
+        } else if (soma >= 11 && soma <= 20) {
+            resposta = 'Leve'
+        } else if (soma >= 21 && soma <= 30) {
+            resposta = 'Moderado'
+        } else if (soma > 30) {
+            resposta = 'Grave'
+        }
+
+        return resposta;
+    }
+
+    function getGravDor() {
+        let soma = 0;
+        let resposta = '';
+
+        //soma valores de dorAtivDP
+        if (dorAtivDP == 'Muito') {
+            soma = soma + 3;
+        } else if (dorAtivDP == 'Moderadamente') {
+            soma = soma + 2;
+        } else if (dorAtivDP == 'Pouco') {
+            soma = soma + 1;
+        } else if (dorAtivDP == 'Nenhum') {
+            soma = soma + 0;
+        }
+
+        //soma valores de dorPeitoR
+        if (dorPeitoR == 'Muito') {
+            soma = soma + 3;
+        } else if (dorPeitoR == 'Moderadamente') {
+            soma = soma + 2;
+        } else if (dorPeitoR == 'Pouco') {
+            soma = soma + 1;
+        } else if (dorPeitoR == 'Nenhum') {
+            soma = soma + 0;
+        }
+
+        //soma valores de dorPeito
+        if (dorPeito == 'Diariamente') {
+            soma = soma + 3;
+        } else if (dorPeito == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (dorPeito == 'UmaTres') {
+            soma = soma + 1;
+        } else if (dorPeito == 'Nunca') {
+            soma = soma + 0;
+        }
+
+        //soma valores de outroL
+        if (outroL == 'Diariamente') {
+            soma = soma + 3;
+        } else if (outroL == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (outroL == 'UmaTres') {
+            soma = soma + 1;
+        } else if (outroL == 'Nunca') {
+            soma = soma + 0;
+        }
+
+        //soma valores de nivelDor
+        if (nivelDor == 'SeteaOito' || nivelDor == 'NoveaDez') {
+            soma = soma + 3;
+        } else if (nivelDor == 'CincoaSete') {
+            soma = soma + 2;
+        } else if (nivelDor == 'TresaCinco') {
+            soma = soma + 1;
+        } else if (nivelDor == 'UmaTres') {
+            soma = soma + 0;
+        }
+
+        //soma valores de dorAtivP
+        if (dorAtivP == 'Diariamente') {
+            soma = soma + 3;
+        } else if (dorAtivP == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (dorAtivP == 'UmaTres') {
+            soma = soma + 1;
+        } else if (dorAtivP == 'Nunca') {
+            soma = soma + 0;
+        }
+
+
+        //soma valores de dorPeito100
+        if (dorPeito100 == 'Diariamente') {
+            soma = soma + 3;
+        } else if (dorPeito100 == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (dorPeito100 == 'UmaTres') {
+            soma = soma + 1;
+        } else if (dorPeito100 == 'Nunca') {
+            soma = soma + 0;
+        }
+
+        //soma valores de qualquerAtiv
+        if (qualquerAtiv == 'Diariamente') {
+            soma = soma + 3;
+        } else if (qualquerAtiv == 'QuatroaSeis') {
+            soma = soma + 2;
+        } else if (qualquerAtiv == 'UmaTres') {
+            soma = soma + 1;
+        } else if (qualquerAtiv == 'Nunca') {
+            soma = soma + 0;
+        }
+
+
+        if (soma >= 0 && soma <= 5) {
+            resposta = 'Tranquilo'
+        } else if (soma >= 6 && soma <= 15) {
+            resposta = 'Leve'
+        } else if (soma >= 16 && soma <= 23) {
+            resposta = 'Moderado'
+        } else if (soma >= 24) {
+            resposta = 'Grave'
+        }
+
+        return resposta;
+    }
+
     async function handleSave() {
-        await db.collection('formulario').add({
-            created: new Date(),
-            user: user.uid,
-            medico: doc,
-            dorAtiv: dorAtiv,
-            dorAtivBC: dorAtivBC,
-            dorAtivFA: dorAtivFA,
-            dorAtivDP:dorAtivDP,
-            cansacoR:cansacoR,
-            batimentoR:batimentoR,
-            faltaArR:faltaArR,
-            dorPeitoR:dorPeitoR,
-            tonturas:tonturas,
-            desmaio:desmaio,
-            dorPeito:dorPeito,
-            pressaoAlta:pressaoAlta,
-            suadoresFrios:suadoresFrios,
-            branco:branco,
-            vomitar:vomitar,
-            inchaco:inchaco,
-            outroL:outroL,
-            nivelDor:nivelDor,
-            dorAtivP:dorAtivP,
-            dorPeito200:dorPeito200,
-            dorPeito100:dorPeito100,
-            qualquerAtiv:qualquerAtiv
-        })
-            .then(() => {
-                console.log('Formulario criado')
+        if (dorAtiv != '' && dorAtivBC != '' && dorAtivFA != '' && dorAtivDP != '' && cansacoR != '' && batimentoR != ''
+            && faltaArR != '' && dorPeitoR != '' && tonturas != '' && desmaio != '' && dorPeito != '' && pressaoAlta != ''
+            && suadoresFrios != '' && branco != '' && vomitar != '' && inchaco != '' && outroL != '' && nivelDor != '' &&
+            dorAtivP != '' && dorPeito200 != '' && dorPeito100 != '' && qualquerAtiv != '') {
+
+
+            const respostaGravInsuficiencia = getGravInsuficiencia();
+            const respostaGravDor = getGravDor();
+
+            await db.collection('formulario').add({
+                created: new Date(),
+                user: user.uid,
+                medico: doc,
+                dorAtiv: dorAtiv,
+                dorAtivBC: dorAtivBC,
+                dorAtivFA: dorAtivFA,
+                dorAtivDP: dorAtivDP,
+                cansacoR: cansacoR,
+                batimentoR: batimentoR,
+                faltaArR: faltaArR,
+                dorPeitoR: dorPeitoR,
+                tonturas: tonturas,
+                desmaio: desmaio,
+                dorPeito: dorPeito,
+                pressaoAlta: pressaoAlta,
+                suadoresFrios: suadoresFrios,
+                branco: branco,
+                vomitar: vomitar,
+                inchaco: inchaco,
+                outroL: outroL,
+                nivelDor: nivelDor,
+                dorAtivP: dorAtivP,
+                dorPeito200: dorPeito200,
+                dorPeito100: dorPeito100,
+                qualquerAtiv: qualquerAtiv,
+                diagDorPeito: respostaGravDor,
+                diagInsuficienciaCard: respostaGravInsuficiencia
             })
-            .catch((error) => {
-                console.log(error);
-            })
-        navigation.goBack();
+                .then(() => {
+                    console.log('Formulario criado')
+
+                    if (respostaGravDor == 'Gave') {
+                        setAlertDor('Sua dor no peito é classificada como grave. É importante procurar atendimento médico imediatamente para avaliação e tratamento adequados.')
+                    } else if (respostaGravDor == 'Moderado') {
+                        setAlertDor('Sua dor no peito está em um nível moderado. É recomendado buscar orientação médica para uma avaliação mais detalhada.')
+                    } else if (respostaGravDor == 'Leve') {
+                        setAlertDor('Sua dor no peito é considerada leve. Recomenda-se monitorar os sintomas e, se necessário, agendar uma consulta médica para um acompanhamento adequado.')
+                    } else {
+                        setAlertDor('Sua dor no peito está em um nível tranquilo. No entanto, é sempre importante estar atento aos sinais de qualquer mudança e procurar assistência médica se necessário.')
+                    }
+
+                    if (respostaGravInsuficiencia == 'Gave') {
+                        setAlertInsufCard('Sua insuficiência cardíaca está em um estágio grave. É fundamental buscar atendimento médico especializado o mais rápido possível para um plano de tratamento apropriado.')
+                    } else if (respostaGravInsuficiencia == 'Moderado') {
+                        setAlertInsufCard('Sua insuficiência cardíaca é de intensidade moderada. É aconselhável agendar uma consulta com um cardiologista para uma avaliação mais detalhada e orientações sobre o tratamento.')
+                    } else if (respostaGravInsuficiencia == 'Leve') {
+                        setAlertInsufCard('Sua insuficiência cardíaca é leve. Recomenda-se seguir um estilo de vida saudável, tomar a medicação prescrita conforme orientação médica e comparecer às consultas de acompanhamento.')
+                    } else {
+                        setAlertInsufCard('Sua insuficiência cardíaca está em um estado tranquilo. No entanto, é essencial adotar medidas de prevenção, como seguir uma dieta equilibrada, realizar exercícios físicos adequados e tomar a medicação conforme prescrição médica.')
+                    }
+                    openModal2()
+                    // navigation.goBack();
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
+
+        } else {
+            // Alert.alert('É necessário responder todas as perguntas!')
+            setMsgModal("É necessário responder todas as perguntas.")
+            setModalVisible(true)
+        }
     }
 
     return (
@@ -188,6 +513,38 @@ export default function Formulario() {
                     <Picker.Item label="Opção 01" value="opção1" />
                     <Picker.Item label="Opção 02" value="opção2" />
                 </Picker> */}
+
+
+                <Modal visible={modalVisible} transparent={true} animationType="fade" >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalText}>{msgModal}</Text>
+                            {/* <Button title="Fechar" onPress={closeModal} /> */}
+                            <TouchableOpacity onPress={closeModal} style={styles.btnModal}>
+                                <Text style={styles.btnTxt}>Fechar</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                    </View>
+                </Modal>
+
+                <Modal visible={modalVisible2} transparent={true} animationType="fade" >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+
+                            <Text style={{ ...styles.modalText2, marginBottom: 10 }}>{alertInsufCard}</Text>
+                            <Text style={styles.modalText2}>{alertDor}</Text>
+
+                            <View style={{borderRadius: 8 , borderWidth: 1, padding: 10}}>
+                                <Text style={{...styles.modalText, fontSize: 14}}>Durante o pós-operatório cardíaco, é fundamental seguir as orientações médicas para uma recuperação adequada. Certifique-se de descansar o suficiente, tomar a medicação prescrita, realizar atividades físicas leves conforme autorizado pelo médico, adotar uma alimentação saudável e evitar esforços excessivos. Além disso, esteja atento a quaisquer sinais de complicações, como aumento da dor no peito, dificuldade respiratória ou inchaço excessivo, e informe imediatamente sua equipe médica para obter assistência adequada.</Text>
+                            </View>
+                            <TouchableOpacity onPress={closeModal2} style={styles.btnModal}>
+                                <Text style={styles.btnTxt}>Finalizar</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                    </View>
+                </Modal>
 
 
 
@@ -1001,5 +1358,43 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         // backgroundColor: "#a0a4a5",
         backgroundColor: 'white'
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 16,
+        alignItems: 'center',
+        padding: 35
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 16,
+        textAlign: 'justify'
+    },
+    modalText2: {
+        fontSize: 16,
+        marginBottom: 16,
+        textAlign: 'justify'
+    },
+    btnModal: {
+        width: '80%',
+        backgroundColor: "#d04556",
+        //595458
+        borderRadius: 8,
+        marginTop: 15,
+        paddingVertical: 10,
+        paddingHorizontal: 80,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    btnTxt: {
+        color: "#FFF",
+        fontSize: 15,
     },
 });

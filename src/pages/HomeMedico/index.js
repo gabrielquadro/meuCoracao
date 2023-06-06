@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import Header from "../../components/Header";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
@@ -14,6 +14,8 @@ export default function Home() {
   const [userP, setUserP] = useState([]);
   const [form, setForms] = useState([]);
   const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     async function getUser() {
@@ -28,6 +30,7 @@ export default function Home() {
 
   useFocusEffect(
     useCallback(() => {
+      setLoading(true)
       let isActive = true;
       async function fetchPosts() {
         db.collection('formulario')
@@ -48,6 +51,10 @@ export default function Home() {
             setForms(formList);
 
           })
+          .finally(() => {
+            setLoading(false)
+
+          })
       }
       fetchPosts();
       return () => {
@@ -59,34 +66,44 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <Header />
-      <View style={styles.container2}>
 
-        <Text style={{ fontSize: 20, marginBottom: 20 }} >Bem vindo {userP.nome}</Text>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator SIZE={70} color="red"></ActivityIndicator>
+        </View>
+      ) : (
+        <View style={styles.container}>
+
+          <Header />
+          <View style={styles.container2}>
+
+            <Text style={{ fontSize: 20, marginBottom: 20 }} >Bem vindo(a) {userP.nome}</Text>
 
 
-        <TouchableOpacity style={styles.btnAtt} onPress={() => navigation.navigate("SearchTab")}>
-          <Text style={styles.btnAttTxt}>Vizualiar todos os pacientes</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.btnAtt} onPress={() => navigation.navigate("SearchTab")}>
+              <Text style={styles.btnAttTxt}>Visualiar todos os pacientes</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnAtt} onPress={() => navigation.navigate("FormTab")}>
-          <Text style={styles.btnAttTxt}>Vizualiar todos os formularios</Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 20, marginTop: 20, marginBottom: 20 }} >Útlmos registros do seus pacientes</Text>
+            <TouchableOpacity style={styles.btnAtt} onPress={() => navigation.navigate("FormTab")}>
+              <Text style={styles.btnAttTxt}>Visualiar todos os formularios</Text>
+            </TouchableOpacity>
+            <Text style={{ fontSize: 20, marginTop: 20, marginBottom: 20 }} >Útlmos registros do seus pacientes</Text>
 
-        <FlatList
-          style={styles.list}
-          data={form}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <ListFormMedico
-              data={item}
-            />
-          )}
-        >
-        </FlatList>
+            <FlatList
+              style={styles.list}
+              data={form}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <ListFormMedico
+                  data={item}
+                />
+              )}
+            >
+            </FlatList>
 
-      </View>
+          </View>
+        </View>
+      )}
     </View>
   );
 }

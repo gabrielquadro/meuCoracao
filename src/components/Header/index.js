@@ -1,6 +1,8 @@
 import React from "react";
 import { SafeAreaView, Text, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import { StatusBar } from 'expo-status-bar';
+
 function Header() {
   return (
     <SafeAreaView style={styles.container}>

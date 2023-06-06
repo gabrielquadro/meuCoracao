@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import Header from "../../components/Header";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
@@ -13,36 +13,37 @@ export default function FormularioListMedico() {
     const [userP, setUserP] = useState([]);
     const [form, setForms] = useState([]);
     const { user } = useContext(AuthContext);
+    const [loading, setLoading] = useState(false);
 
 
 
-    useEffect(() => {
-        async function fetchPosts() {
-            await db.collection('formulario')
-                .where('medico', '==', user.uid)
-                .orderBy('created', 'desc')
-                .get()
-                .then((snapshoot) => {
-                    setForms([]);
-                    const formList = [];
-                    snapshoot.docs.map(u => {
-                        formList.push({
-                            ...u.data(),
-                            id: u.id,
-                        })
-                    })
+    // useEffect(() => {
+    //     async function fetchPosts() {
+    //         setLoading(true)
+    //         await db.collection('formulario')
+    //             .where('medico', '==', user.uid)
+    //             .orderBy('created', 'desc')
+    //             .get()
+    //             .then((snapshoot) => {
+    //                 setForms([]);
+    //                 const formList = [];
+    //                 snapshoot.docs.map(u => {
+    //                     formList.push({
+    //                         ...u.data(),
+    //                         id: u.id,
+    //                     })
+    //                 })
 
-                    setForms(formList);
-
-                })
-        }
-        fetchPosts();
-        console.log('entra')
-
-    }, [])
+    //                 setForms(formList);
+    //                 setLoading(false)
+    //             })
+    //     }
+    //     fetchPosts();
+    // }, [])
 
     useFocusEffect(
         useCallback(() => {
+            setLoading(true)
             async function fetchPosts() {
                 await db.collection('formulario')
                     .where('medico', '==', user.uid)
@@ -61,6 +62,9 @@ export default function FormularioListMedico() {
                         setForms(formList);
 
                     })
+                    .finally(() => {
+                        setLoading(false)
+                    })
             }
             fetchPosts();
             console.log('entra')
@@ -69,23 +73,31 @@ export default function FormularioListMedico() {
 
     return (
         <View style={styles.container}>
-            <Header />
+            {loading ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator SIZE={70} color="red"></ActivityIndicator>
+                </View>
+            ) : (
+                <View style={styles.container}>
+                    <Header />
 
-            <View style={styles.container2}>
-                <Text style={{ fontSize: 20 }}>Formulários</Text>
-                <FlatList
-                    style={styles.list}
-                    data={form}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <ListFormMedico
-                            data={item}
-                        />
-                    )}
-                >
-                </FlatList>
+                    <View style={styles.container2}>
+                        <Text style={{ fontSize: 20 }}>Formulários</Text>
+                        <FlatList
+                            style={styles.list}
+                            data={form}
+                            showsVerticalScrollIndicator={false}
+                            renderItem={({ item }) => (
+                                <ListFormMedico
+                                    data={item}
+                                />
+                            )}
+                        >
+                        </FlatList>
 
-            </View>
+                    </View>
+                </View>
+            )}
         </View>
     );
 }

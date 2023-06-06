@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import Header from "../../components/Header";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
@@ -13,40 +13,41 @@ export default function FormularioList() {
     const [userP, setUserP] = useState([]);
     const [form, setForms] = useState([]);
     const { user } = useContext(AuthContext);
+    const [loading, setLoading] = useState(false);
 
 
 
-    useEffect(() => {
-        console.log('aquiii')
-        async function fetchPosts() {
-            await db.collection('formulario')
-                .where('user', '==', user.uid)
-                .orderBy('created', 'desc')
-                .get()
-                .then((snapshoot) => {
-                    console.log('load')
+    // useEffect(() => {
+    //     console.log('aquiii')
+    //     async function fetchPosts() {
+    //         await db.collection('formulario')
+    //             .where('user', '==', user.uid)
+    //             .orderBy('created', 'desc')
+    //             .get()
+    //             .then((snapshoot) => {
+    //                 console.log('load')
 
-                    setForms([]);
-                    const formList = [];
-                    snapshoot.docs.map(u => {
-                        formList.push({
-                            ...u.data(),
-                            id: u.id,
-                        })
-                    })
+    //                 setForms([]);
+    //                 const formList = [];
+    //                 snapshoot.docs.map(u => {
+    //                     formList.push({
+    //                         ...u.data(),
+    //                         id: u.id,
+    //                     })
+    //                 })
 
-                    setForms(formList);
+    //                 setForms(formList);
 
-                })
-        }
-        fetchPosts();
-        console.log('entra')
+    //             })
+    //     }
+    //     fetchPosts();
+    //     console.log('entra')
 
-    }, [])
+    // }, [])
 
     useFocusEffect(
         useCallback(() => {
-            console.log('aquii 222222')
+            setLoading(true)
             async function fetchPosts() {
                 await db.collection('formulario')
                     .where('user', '==', user.uid)
@@ -65,6 +66,8 @@ export default function FormularioList() {
                         })
 
                         setForms(formList);
+                        setLoading(false)
+
 
                     })
             }
@@ -75,23 +78,32 @@ export default function FormularioList() {
 
     return (
         <View style={styles.container}>
-            <Header />
+            {loading ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator SIZE={70} color="red"></ActivityIndicator>
+                </View>
+            ) : (
+                <View style={styles.container}>
 
-            <View style={styles.container2}>
-                <Text style={{ fontSize: 20 }}>Formulários</Text>
-                <FlatList
-                    style={styles.list}
-                    data={form}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <ListHome
-                            data={item}
-                        />
-                    )}
-                >
-                </FlatList>
+                    <Header />
 
-            </View>
+                    <View style={styles.container2}>
+                        <Text style={{ fontSize: 20 }}>Formulários</Text>
+                        <FlatList
+                            style={styles.list}
+                            data={form}
+                            showsVerticalScrollIndicator={false}
+                            renderItem={({ item }) => (
+                                <ListHome
+                                    data={item}
+                                />
+                            )}
+                        >
+                        </FlatList>
+
+                    </View>
+                </View>
+            )}
         </View>
     );
 }

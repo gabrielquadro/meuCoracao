@@ -2,7 +2,7 @@
   "expo": {
     "name": "meuCoracao",
     "slug": "meuCoracao",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/iconeQuadrado.png",
     "userInterfaceStyle": "light",

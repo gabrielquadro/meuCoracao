@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import Header from "../../components/Header";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import { db, app, firebase } from '../../config'
 import { AuthContext } from '../../contexts/auth'
 import ListHome from "../../components/ListHome";
+import { StatusBar } from 'expo-status-bar';
+
 
 
 
@@ -14,6 +16,8 @@ export default function Home() {
   const [userP, setUserP] = useState([]);
   const [form, setForms] = useState([]);
   const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+
 
 
 
@@ -30,6 +34,7 @@ export default function Home() {
 
   useFocusEffect(
     useCallback(() => {
+      setLoading(true)
       let isActive = true;
       async function fetchPosts() {
         db.collection('formulario')
@@ -48,6 +53,8 @@ export default function Home() {
             })
 
             setForms(formList);
+            setLoading(false)
+
 
           })
       }
@@ -62,44 +69,96 @@ export default function Home() {
     navigation.navigate("FormularioListTab", { user: item });
   }
 
-
   return (
     <View style={styles.container}>
-      <Header />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator SIZE={70} color="red"></ActivityIndicator>
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <Header />
 
-      <View style={styles.container2}>
-        {/* <Text style={{ fontSize: 20 }}>Home paciente</Text> */}
-        <Text style={{ fontSize: 20, marginBottom: 20 }} >Bem vindo {userP.nome}</Text>
 
-        <Text style={{ fontSize: 20, marginTop: 30, marginBottom: 20 }} >Útlmos registros</Text>
+          <View style={styles.container2}>
+            {userP.sexo == 'M' ? (
+              <Text style={{ fontSize: 20, marginBottom: 10 }} >Bem vindo {userP.nome}</Text>
+            ) : (
+              <Text style={{ fontSize: 20, marginBottom: 10 }} >Bem vinda {userP.nome}</Text>
+            )}
 
-        <TouchableOpacity style={styles.btnAtt} onPress={() => handleForm(user)}>
-          <Text style={styles.btnAttTxt}>Vizualiar todos</Text>
-        </TouchableOpacity>
 
-        <FlatList
-          style={styles.list}
-          data={form}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <ListHome
-              data={item}
-            />
-          )}
-        >
-        </FlatList>
+            <Text style={{ fontSize: 20, marginTop: 10, marginBottom: 20 }} >Útlmos registros</Text>
 
-      </View>
+            <TouchableOpacity style={styles.btnAtt} onPress={() => handleForm(user)}>
+              <Text style={styles.btnAttTxt}>Vizualiar todos</Text>
+            </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.btnNew}
-        //activeOpacity={0.8}
-        onPress={() => navigation.navigate("Formulario")}
-      >
-        <Feather name="plus" color={"#FFF"} size={25} />
-      </TouchableOpacity>
+            <FlatList
+              style={styles.list}
+              data={form}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <ListHome
+                  data={item}
+                />
+              )}
+            >
+            </FlatList>
+
+          </View>
+
+          <TouchableOpacity
+            style={styles.btnNew}
+            //activeOpacity={0.8}
+            onPress={() => navigation.navigate("Formulario")}
+          >
+            <Feather name="plus" color={"#FFF"} size={25} />
+          </TouchableOpacity>
+        </View>
+      )}
+
+
     </View>
-  );
+  )
+
+  //   return (
+  //     <View style={styles.container}>
+  //       <Header />
+
+  //       <View style={styles.container2}>
+  //         {/* <Text style={{ fontSize: 20 }}>Home paciente</Text> */}
+  //         <Text style={{ fontSize: 20, marginBottom: 20 }} >Bem vindo {userP.nome}</Text>
+
+  //         <Text style={{ fontSize: 20, marginTop: 30, marginBottom: 20 }} >Útlmos registros</Text>
+
+  //         <TouchableOpacity style={styles.btnAtt} onPress={() => handleForm(user)}>
+  //           <Text style={styles.btnAttTxt}>Vizualiar todos</Text>
+  //         </TouchableOpacity>
+
+  //         <FlatList
+  //           style={styles.list}
+  //           data={form}
+  //           showsVerticalScrollIndicator={false}
+  //           renderItem={({ item }) => (
+  //             <ListHome
+  //               data={item}
+  //             />
+  //           )}
+  //         >
+  //         </FlatList>
+
+  //       </View>
+
+  //       <TouchableOpacity
+  //         style={styles.btnNew}
+  //         //activeOpacity={0.8}
+  //         onPress={() => navigation.navigate("Formulario")}
+  //       >
+  //         <Feather name="plus" color={"#FFF"} size={25} />
+  //       </TouchableOpacity>
+  //     </View>
+  //   );
 }
 
 const styles = StyleSheet.create({

@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     Image,
     FlatList,
+    ActivityIndicator
 } from "react-native";
 import { AuthContext } from "../../contexts/auth";
 import Header from "../../components/Header";
@@ -13,6 +14,8 @@ import { db, app, firebase } from "../../config";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import ListHome from "../../components/ListHome";
+import ListFormMedico from '../../pages/ListFormMedico'
+
 
 
 export default function ProfilePaciente({ route }) {
@@ -100,6 +103,7 @@ export default function ProfilePaciente({ route }) {
 
     useFocusEffect(
         useCallback(() => {
+            setIsLoading(true)
             let isActive = true;
             async function fetchPosts() {
                 db.collection('formulario')
@@ -116,9 +120,10 @@ export default function ProfilePaciente({ route }) {
                                 id: u.id,
                             })
                         })
-
-                        setForms(formList);
-                        console.log(formList)
+                        setForms(formList)
+                    })
+                    .finally(() => {
+                        setIsLoading(false)
 
                     })
             }
@@ -130,52 +135,61 @@ export default function ProfilePaciente({ route }) {
     )
 
     function handleAtt(item) {
-        navigation.navigate("AtualizarPerfilPaciente", {user : item});
+        navigation.navigate("AtualizarPerfilPaciente", { user: item });
     }
 
     function handleForm(item) {
-        navigation.navigate("FormularioListPacientes", {user : item});
+        navigation.navigate("FormularioListPacientes", { user: item });
     }
 
     return (
-        <View style={styles.container}>
+        <View style={{flex:1}}>
+            {loading ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator SIZE={70} color="red"></ActivityIndicator>
+                </View>
+            ) : (
+                <View style={styles.container}>
+
+                    {urlI ? (
+                        <Image style={styles.img} source={{ uri: urlI }} />
+                    ) : (
+                        <Image
+                            style={styles.img}
+                            source={require("../../assets/avatar.png")}
+                        />
+                    )}
 
 
-                {urlI ? (
-                    <Image style={styles.img} source={{ uri: urlI }} />
-                ) : (
-                    <Image
-                        style={styles.img}
-                        source={require("../../assets/avatar.png")}
-                    />
-                )}
-  
+                    <Text style={styles.nome}>Perfil de {name}</Text>
 
-            <Text style={styles.nome}>Perfil de {name}</Text>
-            
-            <TouchableOpacity style={styles.btnAtt} onPress={() => handleAtt(item)}>
-                <Text style={styles.btnAttTxt}>Atualizar perfil do paciente</Text>
-            </TouchableOpacity>
+                    <TouchableOpacity style={styles.btnAtt} onPress={() => handleAtt(item)}>
+                        <Text style={styles.btnAttTxt}>Atualizar perfil do paciente</Text>
+                    </TouchableOpacity>
 
-            <Text style={{ fontSize: 20, marginBottom: 10, color:'white' }} >Úlmos registros</Text>
+                    <Text style={{ fontSize: 20, marginBottom: 10, color: 'white' }} >Úlmos registros</Text>
 
-            <TouchableOpacity style={styles.btnAtt} onPress={() => handleForm(item)}>
-                <Text style={styles.btnAttTxt}>Vizualiar todos</Text>
-            </TouchableOpacity>
+                    <TouchableOpacity style={styles.btnAtt} onPress={() => handleForm(item)}>
+                        <Text style={styles.btnAttTxt}>Vizualiar todos</Text>
+                    </TouchableOpacity>
 
-            <FlatList
-                style={styles.list}
-                data={form}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                    <ListHome
-                        data={item}
-                    />
-                )}
-            >
-            </FlatList>
+                    <FlatList
+                        style={styles.list}
+                        data={form}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item }) => (
+                            <ListFormMedico
+                                data={item}
+                            />
+                        )}
+                    >
+                    </FlatList>
 
-            
+
+                </View>
+            )}
+
+
         </View>
     );
 }

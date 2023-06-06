@@ -26,6 +26,8 @@ export default function ProfilePaciente() {
   const [medico, setMedico] = useState(false);
   const appVersion = Constants.manifest.version;
 
+  
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -151,12 +153,12 @@ export default function ProfilePaciente() {
       <TouchableOpacity style={styles.btnAtt} onPress={() => handleAtt()}>
         <Text style={styles.btnAttTxt}>Atualizar perfil</Text>
       </TouchableOpacity>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.btnAtt}
         onPress={() => navigation.navigate("Avaliar")}
       >
         <Text style={styles.btnAttTxt}>Avalair o aplicativo</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity onPress={handleSignOut} style={styles.btnSair}>
         <Text style={{ ...styles.btnSairTxt }}>Sair</Text>
       </TouchableOpacity>
