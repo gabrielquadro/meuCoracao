@@ -161,7 +161,7 @@ export default function AtualizarPerfilPaciente() {
         setHipertencao(
           value.data().hipertencao ? value.data().hipertencao : ""
         );
-        setOutra(value.data().outra)
+        setOutra(value.data().outra ? value.data().outra : '')
       })
       .finally(() => {
         setLoading(false);

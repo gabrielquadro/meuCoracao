@@ -31,6 +31,8 @@ export default function AtualizarPerfilPaciente({ route }) {
   const [loading, setLoading] = useState(false);
   const [diabetes, setDiabetes] = useState('');
   const [hipertencao, setHipertencao] = useState('');
+  const [outra, setOutra] = useState();
+
 
   const theme = {
     ...DefaultTheme,
@@ -83,6 +85,7 @@ export default function AtualizarPerfilPaciente({ route }) {
     { label: "Reconstrução de aorta", value: "RA" },
     { label: "Implante de marcapasso", value: "IM" },
     { label: "Cirurgia estrutural(comunicação inreratrial", value: "CE" },
+    { label: "Outra", value: "O" },
   ];
 
   const handleStateChange = (value) => {
@@ -150,7 +153,7 @@ export default function AtualizarPerfilPaciente({ route }) {
         setCirurgia(value.data().cirurgia)
         setDiabetes(value.data().diabetes ? value.data().diabetes : '')
         setHipertencao(value.data().hipertencao ? value.data().hipertencao : '')
-
+        setOutra(value.data().outra ? value.data().outra : ' ')
       }).finally(() => {
         setLoading(false)
       });
@@ -174,7 +177,8 @@ export default function AtualizarPerfilPaciente({ route }) {
         anoNascimento: year,
         cirurgia: cirurgia,
         diabetes: diabetes,
-        hipertencao: hipertencao
+        hipertencao: hipertencao,
+        outra:outra
       })
       .then(() => {
         console.log("Atualizou");
@@ -312,6 +316,23 @@ export default function AtualizarPerfilPaciente({ route }) {
               ))}
             </Picker>
           </View>
+
+          
+          {
+            cirurgia == "O" ? (
+              <TextInput
+                theme={theme}
+                label="Nome da cirurgia"
+                mode="flat"
+                textColor="#000"
+                style={styles.imput}
+                value={outra}
+                onChangeText={(text) => setOutra(text)}
+              />
+            ) : (
+              <View></View>
+            )
+          }
 
           <Text style={{ marginTop: 10 }}>Possui diabetes?</Text>
           <RadioButton.Group onValueChange={setDiabetes} value={diabetes} editable={false}>
