@@ -18,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gabrielquadro.meuCoracaoApp"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +29,7 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.gabrielquadro.meuCoracao"
+      "package": "com.gabrielquadro.meuCoracaoApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"

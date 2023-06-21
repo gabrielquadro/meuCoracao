@@ -44,11 +44,11 @@ export default function Cadastrar() {
 
     const openModal = () => {
         setModalVisible(true);
-      };
-    
-      const closeModal = () => {
+    };
+
+    const closeModal = () => {
         setModalVisible(false);
-      };
+    };
 
     const theme = {
         ...DefaultTheme,
@@ -114,7 +114,7 @@ export default function Cadastrar() {
                 setModalVisible(true)
                 // Alert.alert("Atenção", "Informe todos os campos.");
                 return;
-            }else if( senha.length < 7){
+            } else if (senha.length < 7) {
                 setMsgModal("Senha deve conter no mínimo 7 caracteres.")
                 setModalVisible(true)
             } else {
@@ -176,22 +176,22 @@ export default function Cadastrar() {
     return (
         <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, backgroundColor: "#a0a4a5", }}>
             <View style={styles.container}>
-        <StatusBar style="light" backgroundColor="#a0a4a5"/>
-                
-            <Modal visible={modalVisible} transparent={true} animationType="fade" >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalText}>{msgModal}</Text>
-                {/* <Button title="Fechar" onPress={closeModal} /> */}
-                <TouchableOpacity onPress={closeModal} style={styles.btnModal}>
-                  <Text style={styles.btnTxt}>Fechar</Text>
-                </TouchableOpacity>
+                <StatusBar style="light" backgroundColor="#a0a4a5" />
 
-              </View>
-            </View>
-          </Modal>
-                
-                
+                <Modal visible={modalVisible} transparent={true} animationType="fade" >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalText}>{msgModal}</Text>
+                            {/* <Button title="Fechar" onPress={closeModal} /> */}
+                            <TouchableOpacity onPress={closeModal} style={styles.btnModal}>
+                                <Text style={styles.btnTxt}>Fechar</Text>
+                            </TouchableOpacity>
+
+                        </View>
+                    </View>
+                </Modal>
+
+
                 <Text style={styles.title}>
                     meu
                     <Text style={{ color: "#ff1933" }}>Coração</Text>
@@ -203,7 +203,7 @@ export default function Cadastrar() {
                 </Text>
 
                 <RadioButton.Group onValueChange={setSelection} value={isSelected} >
-                    <View style={{ flexDirection: 'row' , marginBottom: 5}}>
+                    <View style={{ flexDirection: 'row', marginBottom: 5 }}>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 50 }}>
                             <RadioButton
@@ -511,20 +511,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      },
-      modalContent: {
+    },
+    modalContent: {
         backgroundColor: 'white',
         borderRadius: 8,
         padding: 16,
         alignItems: 'center',
         padding: 35
-      },
-      modalText: {
+    },
+    modalText: {
         fontSize: 18,
         marginBottom: 16,
-      },
-      btnModal: {
-        width:'80%',
+    },
+    btnModal: {
+        width: '80%',
         backgroundColor: "#d04556",
         //595458
         borderRadius: 8,
@@ -533,5 +533,5 @@ const styles = StyleSheet.create({
         paddingHorizontal: 80,
         justifyContent: "center",
         alignItems: "center",
-      },
+    },
 });

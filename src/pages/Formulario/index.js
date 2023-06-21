@@ -452,7 +452,7 @@ export default function Formulario() {
                     } else  if (respostaGravInsuficiencia == 'Tranquilo'){
                         setAlertInsufCard('Sua insuficiência cardíaca está em um estado tranquilo. No entanto, é essencial adotar medidas de prevenção, como seguir uma dieta equilibrada, realizar exercícios físicos adequados e tomar a medicação conforme prescrição médica.')
                     }
-                    openMModal2()
+                    openModal2()
                     // navigation.goBack();
                 })
                 .catch((error) => {
